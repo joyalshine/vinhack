@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/styleLmsStatus.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--<script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };  
+    </script>-->
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <button style="display: none;" id="nonPurpose" value="{{justLoggedIn}}"></button>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40"
+                    style="margin-right:5px" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/lms-home-original">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/lms-home">
+                    <i class="fa fa-home" style="--i:2"></i>
+                    <span style="--g:2">Session plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa fa-globe" style="--i:3"></i>
+                    <span style="--g:3">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <section class="menuDiv">
+        <form class="row g-3 ">
+            <div class="col-md-4">
+                <select class="form-select" name="courseInfo" id="idCourseInfo" required="required">
+                    <option value="" selected>Choose Course..</option>
+                    {{#each courses}}
+                    <option value="{{this.value}}">{{this.display}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary mb-3" id="fetchCoursePlan"
+                    onclick="generateCoursePlan()">Generate</button>
+            </div>
+        </form>
+    </section>
+
+    <section id="tableSection" class="table-responsive-lg p-3" style="overflow-x:auto; margin-top: 45px;">
+        <!--<table class="table table-sm table-bordered  table-striped" style="table-layout: fixed;">
+            <thead>
+                <tr>
+                    <th scope="col" rowspan="2" style="width: 30px;" class="text-center align-middle">W#</th>
+                    <th scope="col" rowspan="2" style="width: 50px;" class="text-center align-middle">Week Title</th>
+                    <th scope="col" rowspan="2" style="width: 30px;" class="text-center align-middle">Sno</th>
+                    <th scope="col" rowspan="2" style="width: 150px;" class="text-center align-middle">Topic</th>
+                    <th scope="col" rowspan="2" style="width: 120px;" class="text-center align-middle">Youtube Link</th>
+                    <th scope="col" colspan="2" style="width: 50px;" class="text-center align-middle">Duration</th>
+                </tr>
+                <tr>
+                    <th scope="col" class="text-center">MM</th>
+                    <th scope="col" class="text-center">SS</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>-->
+
+        <table class="table table-sm table-bordered  table-striped" style="table-layout: fixed;">
+            <thead>
+                <tr>
+                    <th scope="col" style="" class="text-center align-middle">WEEK</th>
+                    <th scope="col" style="" class="text-center align-middle">Q1</th>
+                    <th scope="col" style="" class="text-center align-middle">Q2</th>
+                    <th scope="col" style="" class="text-center align-middle">Q3</th>
+                    <th scope="col" style="" class="text-center align-middle">Q4</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr class="">
+                    <td class="text-center align-middle">W1</td>
+                    <td class="text-center  align-middle">
+                        <div class="row m-1">
+                            <div class="col-sm-4">
+                                <input class="form-check-input" type="checkbox" id="gridCheck" style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                        <div class="row m-1">
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox1" name="color" value="option1" style="background-color: rgb(94, 157, 0);">
+                            </div>
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox2" name="color" value="option2" style="background-color: rgb(255, 0, 0);">
+                            </div>
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox3" name="color" value="option3" style="background-color: rgb(0, 119, 255);">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <!--<tr class="">
+                    <td class="text-center align-middle">W2</td>
+                    <td class="text-center  align-middle">
+                        <div class="row m-1">
+                            <div class="col-sm-4">
+                                <input class="form-check-input" type="checkbox" id="gridCheck" style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                        <div class="row m-1">
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox1" name="color" value="option1" style="background-color: greenyellow;">
+                            </div>
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox2" name="color" value="option2" style="background-color: rgb(255, 174, 0);">
+                            </div>
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox3" name="color" value="option3" style="background-color: rgb(0, 0, 0);">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="">
+                    <td class="text-center align-middle">W3</td>
+                    <td class="text-center  align-middle">
+                        <div class="row m-1">
+                            <div class="col-sm-4">
+                                <input class="form-check-input" type="checkbox" id="gridCheck" style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                        <div class="row m-1">
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox1" name="color" value="option1" style="background-color: greenyellow;">
+                            </div>
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox2" name="color" value="option2" style="background-color: rgb(255, 174, 0);">
+                            </div>
+                            <div class="col-4">
+                                <input class="form-check-input" type="radio" id="inlineCheckbox3" name="color" value="option3" style="background-color: rgb(0, 0, 0);">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center  align-middle">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input class="form-check-input" type="checkbox" id="gridCheck"  style="height: 20px; width: 20px;">
+                            </div>
+                            <div class="col-sm-8 col-12">
+                                <input class="form-control form-control-sm" type="number" placeholder="" width="">
+                            </div>
+                        </div>
+                    </td>
+                </tr>-->
+            </tbody>
+        </table>
+    </section>
+    <section class="text-center hide" id="addMessage">
+        <span style="font-size: 20px;">No Course Plan available..</span>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+        window.onload = function showLoggedIn() {
+            justLoggedIn = document.getElementById("nonPurpose").value
+            if (justLoggedIn == "1") {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Signed in successfully'
+                })
+            }
+
+        }
+
+        function generateCoursePlan() {
+            let addMessage = document.getElementById("addMessage")
+            let table = document.getElementById("tableSection")
+            let tableBody = document.getElementById("tableBody")
+            addMessage.classList.add("hide")
+            let element = document.getElementById("idCourseInfo")
+            let data = element.value
+            if (data === "") {
+                element.setCustomValidity("Please Select an item in the list");
+                element.reportValidity();
+            }
+            else {
+                fetch("/lms-session-plan", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ key: data }),
+                }).then(res => res.json()).then(fetchedData => {
+                    if (fetchedData.fetchedData.coursePlan) {
+                        let coursePlan = fetchedData.fetchedData.coursePlan
+                        let links = fetchedData.fetchedData.postTopicsCompleted
+                        let individualStatus = fetchedData.fetchedData.individualStatus
+                        globalPostCompletedTopics = links
+                        table.classList.remove("hide")
+                        tableBody.innerHTML = ""
+                        let n = 1
+
+                        let trIntro = document.createElement("tr")
+                        let td1Intro = document.createElement("td")
+                        let td2Intro = document.createElement("td")
+                        let td3Intro = document.createElement("td")
+                        let td4Intro = document.createElement("td")
+                        let td5Intro = document.createElement("td")
+                        let td6Intro = document.createElement("td")
+                        let td7Intro = document.createElement("td")
+                        let urlIntro = document.createElement("a")
+                        //let badgeIntro = document.createElement("span")
+                        //let btn = document.createElement("button")
+
+                        td4Intro.innerHTML = "Course Introduction"
+                        td4Intro.setAttribute("id", "introTopic")
+
+
+                        if (individualStatus["intro"] == "confirmed") {
+                            urlIntro.setAttribute("href", links["intro"]["videoLink"])
+                            urlIntro.setAttribute("style", "text-decoration: none;")
+                            urlIntro.innerHTML = links["intro"]["videoLink"]
+
+                            td6Intro.innerText = links["intro"]["duration"].split(":")[0]
+                            td7Intro.innerText = links["intro"]["duration"].split(":")[1]
+                        } else {
+                            urlIntro.innerHTML = ""
+                        }
+
+                        td6Intro.setAttribute("class", "text-center")
+
+                        /*if (individualStatus["intro"] == "pending") {
+                            badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #ffc107")
+                            badgeIntro.innerHTML = "Pending"
+
+                            let btnIntro = document.createElement("button")
+                            btnIntro.setAttribute("type", "button")
+                            btnIntro.setAttribute("class", "btn btn-sm btn-rounded")
+                            btnIntro.setAttribute("onclick", "postForm('intro')")
+                            btnIntro.setAttribute("style", "background-color:#ffebc2;")
+                            btnIntro.innerHTML = "Confirm"
+
+                            td7Intro.appendChild(btnIntro)
+                        }
+                        else if (individualStatus["intro"] == "confirmed") {
+                            badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #28a745")
+                            badgeIntro.innerHTML = "Confirmed"
+                        }
+                        else if (individualStatus["intro"] == "denied") {
+                            badgeIntro.setAttribute("class", "badge badge-pill badge-danger")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #dc3545")
+                            badgeIntro.innerHTML = "Denied"
+                        }
+                        else {
+                            badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                            badgeIntro.innerHTML = "Production"
+                        }*/
+
+                        td7Intro.setAttribute("class", "text-center align-middle")
+
+                        trIntro.appendChild(td1Intro)
+                        trIntro.appendChild(td2Intro)
+                        trIntro.appendChild(td3Intro)
+                        trIntro.appendChild(td4Intro)
+                        td5Intro.appendChild(urlIntro)
+                        trIntro.appendChild(td5Intro)
+                        //td6Intro.appendChild(badgeIntro)
+                        trIntro.appendChild(td6Intro)
+
+                        trIntro.appendChild(td7Intro)
+                        tableBody.appendChild(trIntro)
+
+                        while (n <= parseInt(coursePlan.weeks)) {
+                            let W = "W" + n
+                            let t = 0
+                            let firstPrint = "undone"
+                            for (var i = 1; i <= 10; i++) {
+                                let key = W + "-" + i
+
+                                if (coursePlan[key] == null) {
+                                    continue
+                                }
+                                t++
+                                let link = links[key]
+                                let tr = document.createElement("tr")
+                                let td1 = document.createElement("td")
+                                let td2 = document.createElement("td")
+                                let td3 = document.createElement("td")
+                                let td4 = document.createElement("td")
+                                let td5 = document.createElement("td")
+                                let urlBtn = document.createElement("button")
+                                let url = document.createElement("a")
+                                let btn = document.createElement("button")
+                                let badge = document.createElement("span")
+                                if (firstPrint == "undone") {
+                                    firstPrint = "done"
+                                    let td6 = document.createElement("td")
+                                    let td7 = document.createElement("td")
+
+                                    td1.setAttribute("rowspan", "7")
+                                    td1.setAttribute("class", "text-center align-middle")
+                                    td1.setAttribute("id", "id" + W)
+                                    td1.innerHTML = W
+
+                                    td2.setAttribute("rowspan", "7")
+                                    td2.setAttribute("class", "text-center align-middle")
+                                    td2.setAttribute("id", "id" + W + "Title")
+                                    console.log(coursePlan[W])
+                                    if (!coursePlan[W]) { }
+                                    else {
+                                        td2.innerHTML = coursePlan[W]
+                                    }
+
+                                    td3.innerHTML = i
+                                    td3.setAttribute("class", "text-center")
+
+                                    td4.innerHTML = coursePlan[key]
+                                    td4.setAttribute("id", key + "Topic")
+
+                                    if (individualStatus[key] == "confirmed") {
+                                        url.setAttribute("href", link["videoLink"])
+                                        url.setAttribute("style", "text-decoration: none;")
+                                        url.innerHTML = link["videoLink"]
+
+                                        td6.innerText = link["duration"].split(":")[0]
+                                        td7.innerText = link["duration"].split(":")[1]
+                                    } else {
+                                        url.innerHTML = ""
+                                    }
+
+
+                                    td6.setAttribute("class", "text-center align-middle")
+
+                                    /*if (individualStatus[key] == "pending") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #ffc107")
+                                        badge.innerHTML = "Pending"
+
+                                        let btnIntro = document.createElement("button")
+                                        btn.setAttribute("type", "button")
+                                        btn.setAttribute("value", key)
+                                        btn.setAttribute("class", "btn btn-sm btn-rounded")
+                                        btn.setAttribute("onclick", "postForm(this.value)")
+                                        btn.setAttribute("style", "background-color:#ffebc2;")
+                                        btn.innerHTML = "Confirm"
+                                    }
+                                    else if (individualStatus[key] == "confirmed") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #28a745")
+                                        badge.innerHTML = "Confirmed"
+                                    }
+                                    else if (individualStatus[key] == "denied") {
+                                        badge.setAttribute("class", "badge badge-pill badge-danger")
+                                        badge.setAttribute("style", "color: #fff; background-color: #dc3545")
+                                        badge.innerHTML = "Denied"
+                                    }
+                                    else {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                        badge.innerHTML = "Production"
+                                    }*/
+
+                                    td7.setAttribute("class", "text-center align-middle")
+
+                                    tr.appendChild(td1)
+                                    tr.appendChild(td2)
+                                    tr.appendChild(td3)
+                                    tr.appendChild(td4)
+                                    td5.appendChild(url)
+                                    tr.appendChild(td5)
+                                    td6.appendChild(badge)
+                                    tr.appendChild(td6)
+                                    tr.appendChild(td7)
+                                }
+                                else {
+                                    td1.innerHTML = i
+                                    td1.setAttribute("class", "text-center")
+
+                                    td2.innerHTML = coursePlan[key]
+                                    td2.setAttribute("id", key + "Topic")
+
+                                    if (individualStatus[key] == "confirmed") {
+                                        url.setAttribute("href", link["videoLink"])
+                                        url.setAttribute("style", "text-decoration: none;")
+                                        url.innerHTML = link["videoLink"]
+
+                                        td4.innerText = link["duration"].split(":")[0]
+                                        td5.innerText = link["duration"].split(":")[1]
+                                    } else {
+                                        url.innerHTML = ""
+                                    }
+
+
+                                    td4.setAttribute("class", "text-center align-middle")
+
+                                    /*if (individualStatus[key] == "pending") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #ffc107")
+                                        badge.innerHTML = "Pending"
+
+                                        let btnIntro = document.createElement("button")
+                                        btn.setAttribute("type", "button")
+                                        btn.setAttribute("value", key)
+                                        btn.setAttribute("class", "btn btn-sm btn-rounded")
+                                        btn.setAttribute("onclick", "postForm(this.value)")
+                                        btn.setAttribute("style", "background-color:#ffebc2;")
+                                        btn.innerHTML = "Confirm"
+                                    }
+                                    else if (individualStatus[key] == "confirmed") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #28a745")
+                                        badge.innerHTML = "Confirmed"
+                                    }
+                                    else if (individualStatus[key] == "denied") {
+                                        badge.setAttribute("class", "badge badge-pill badge-danger")
+                                        badge.setAttribute("style", "color: #fff; background-color: #dc3545")
+                                        badge.innerHTML = "Denied"
+                                    }
+                                    else {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                        badge.innerHTML = "Production"
+                                    }*/
+
+                                    td5.setAttribute("class", "text-center align-middle")
+
+                                    tr.appendChild(td1)
+                                    tr.appendChild(td2)
+                                    td3.appendChild(url)
+
+                                    tr.appendChild(td3)
+                                    td4.appendChild(badge)
+                                    tr.appendChild(td4)
+
+                                    //if (individualStatus[key] == "pending") {
+                                    //    td5.appendChild(btn)
+                                    //}
+
+                                    tr.appendChild(td5)
+                                }
+                                tableBody.appendChild(tr)
+                            }
+                            n++;
+                            let changeRowSpanWeekNo = document.getElementById("id" + W)
+                            let changeRowSpanWeekTitle = document.getElementById("id" + W + "Title")
+                            if (changeRowSpanWeekNo != null) {
+                                changeRowSpanWeekNo.setAttribute("rowspan", t)
+                                changeRowSpanWeekTitle.setAttribute("rowspan", t)
+                            }
+                            else {
+                                break
+                            }
+                        }
+                    }
+                    else {
+                        tableBody.innerHTML = ""
+                        table.classList.add("hide")
+                        addMessage.classList.remove("hide")
+                    }
+
+                });
+            }
+        }
+
+    </script>
+</body>
+
+</html>

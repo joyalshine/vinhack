@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/stylePostProductionHome.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };  
+    </script>
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <button style="display: none;" id="nonPurpose" value="{{justLoggedIn}}"></button>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/post-production-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-course-plan">
+                    <i class="fa-solid fa-file" style="--i:2"></i>
+                    <span style="--g:2">course plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-production-form">
+                    <i class="fa fa-folder" style="--i:3"></i>
+                    <span style="--g:3">form</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-production-history">
+                    <i class="fa-solid fa-square-check" style="--i:4"></i>
+                    <span style="--g:4">history</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-production-course-view">
+                    <i class="fa-solid fa-book" style="--i:5"></i>
+                    <span style="--g:5">Course View</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa fa-globe" style="--i:6"></i>
+                    <span style="--g:6">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <section id="nesection" class="table-responsive-lg p-4" style="overflow-x:auto; ">
+        <div class="text-center mb-3">
+            <h4 style="color: #004bff;">Under Production</h4>
+        </div>
+        <table class="table table-sm table-bordered table-hover auto-index table-striped" cell-padding="10">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 50px;" class="text-center">Sno</th>
+                    <th scope="col" style="width:350px;" class="text-center">Course Id and Course Name</th>
+                    <th scope="col" style="width:60px;" class="text-center">Semester</th>
+                    <th scope="col" style="width: 200px;" class="text-center">Prof Name</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Degree</th>
+                    <th scope="col" style="width: 30px;" class="text-center">Credit</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Target time</th>
+
+                    <th scope="col" style="width: 70px;" class="text-center">Production <br> Mins &nbsp&nbspSec</th>
+                    <th scope="col" style="width: 120px;" class="text-center">Post Production <br> Mins &nbsp&nbspSec
+                    </th>
+                    <th scope="col" style="width: 80px;" class="text-center">LMS <br> Mins &nbsp&nbspSec</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each postProducerCourses}}
+                {{#if this.underProduction}}
+                <tr style="height: 15px;">
+                    <td class="text-center"></td>
+                    <td class="">{{this.courseId}} &nbsp &nbsp {{this.courseName}}</td>
+                    <td class="text-center">{{this.semester}}</td>
+                    <td>{{this.facultyName}}</td>
+                    <td class="text-center">{{this.degree}}</td>
+                    <td class="text-center">{{this.credits}}</td>
+                    <td class="text-center">{{this.durationTarget}}</td>
+
+                    <td class="text-center">{{this.preCompletedMinutes}}m &nbsp {{this.preCompletedSeconds}}s</td>
+                    <td class="text-center">{{this.postCompletedMinutes}}m &nbsp {{this.postCompletedSeconds}}s</td>
+                    <td class="text-center">{{this.totalCompletedRenderedMinutes}}m &nbsp
+                        {{this.totalCompletedRenderedSeconds}}s</td>
+                </tr>
+                {{/if}}
+                {{/each}}
+            </tbody>
+        </table>
+        <div class="text-center mb-3">
+            <h4 style="color: #004bff;">New Uploads</h4>
+        </div>
+        <table class="table table-sm table-bordered table-hover table-striped " cell-padding="10">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 50px;" class="text-center">Sno</th>
+                    <th scope="col" style="width: 100px;" class="text-center">Course Name</th>
+                    <th scope="col" style="width: 150px;" class="text-center">Prof Name</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Topics</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                
+            </tbody>
+        </table>
+
+        <div class="text-center mb-3">
+            <h4 style="color: #004bff;">Completed</h4>
+        </div>
+        <table class="table table-sm table-bordered table-hover auto-index table-striped " cell-padding="10">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 50px;" class="text-center">Sno</th>
+                    <th scope="col" style="width: 100px;" class="text-center">Course Name</th>
+                    <th scope="col" style="width: 150px;" class="text-center">Prof Name</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Degree</th>
+                    <th scope="col" style="width: 30px;" class="text-center">Credit</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Target time</th>
+                    <th scope="col" style="width: 150px;" class="text-center">Editor Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each postProducerCourses}}
+                {{#if this.completed}}
+                <tr style="height: 15px;">
+                    <td class="text-center"></td>
+                    <td>{{this.courseId}}</td>
+                    <td>{{this.facultyName}}</td>
+                    <td>{{this.degree}}</td>
+                    <td>{{this.credits}}</td>
+                    <td>{{this.durationTarget}}</td>
+                    <td>{{this.editorName}}</td>
+                </tr>
+                {{/if}}
+                {{/each}}
+            </tbody>
+        </table>
+    </section>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+        window.onload = function showLoggedIn() {
+            displayNewUploads()
+            justLoggedIn = document.getElementById("nonPurpose").value
+            if (justLoggedIn == "1") {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Signed in successfully'
+                })
+            }
+
+        }
+
+        function displayNewUploads() {
+            fetch("/post-production-home", {
+                headers: { 'Content-Type': "application/json" },
+                method: "POST",
+                body: JSON.stringify({}),
+            }).then(res => res.json()).then(data => {
+                for(var i=0; i<data.length; i++){
+                    let topics= ""
+                    for(var j=0; j<data[i]["incompleteteTopics"].length;j++){
+                        if(j!=0){ topics = topics + "<br>" }
+                        topics = topics +  data[i]["incompleteteTopics"][j]
+                    }
+                    $("#tableBody").append(`
+                        <tr class="align-middle">
+                            <td class="text-center">${i+1}</td>
+                            <td>${data[i]["courseName"]}</td>
+                            <td>${data[i]["facultyName"]}</td>
+                            <td class="text-center">${topics}</td>
+                        </tr>
+                    `)
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

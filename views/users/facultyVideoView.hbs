@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/styleFacultyVideoView.css'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
+        integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body onload="">
+    <div class="overlay" onclick="off()"></div>
+    <header class="text-center" id="courseAddHeader">
+        <div>
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="courseAddHeaderLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/faculty-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-course-plan">
+                    <i class="fa fa-user" style="--i:2"></i>
+                    <span style="--g:2">Course Plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-confirmation">
+                    <i class="fa fa-folder" style="--i:3"></i>
+                    <span style="--g:3">Confirmation</span>
+                </a>
+            </li>
+            <!--<li>
+                <a href="/admin-confirmations">
+                    <i class="fa fa-user" style="--i:4"></i>
+                    <span style="--g:4">Confirmations</span> 
+                </a>
+            </li>-->
+            <li>
+                <a href="/faculty-slot-booking">
+                    <i class="fa fa-folder" style="--i:4"></i>  
+                    <span style="--g:4">Slot Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa fa-globe" style="--i:5"></i>
+                    <span style="--g:5">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <input type="hidden", value="{{url}}" id="url">
+
+    <section class="upperSection container hide" style="display: flex;     flex-direction: column;align-items: center; " id="iframeDisplay">
+        <iframe width="560" height="315" src="" 
+        title="YouTube video player" frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen id="iframe"></iframe>
+    </section>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+        window.onload = insertURL
+
+        function insertURL(){
+            let url = document.getElementById("url").value
+            let urlTemplate = "https://www.youtube.com/embed/"
+            let iframe = document.getElementById("iframe")
+            iframe.setAttribute("src",urlTemplate + url.split("/")[3])
+            let display = document.getElementById("iframeDisplay")
+            display.classList.remove("hide")
+        }
+    </script>
+
+
+
+</body>
+
+</html>

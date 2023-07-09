@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/styleCoordinatorCoursePlan.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
+        integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/coordinator-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/coordinator-course-plan">
+                    <i class="fa fa-solid fa-book" style="--i:2"></i>
+                    <span style="--g:2">Course Plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/coordinator-reports">
+                    <i class="fa-solid fa-check-to-slot" style="--i:3"></i>
+                    <span style="--g:3">Reports</span>
+                </a>
+            </li>
+            <!--<li>
+                <a href="/faculty-slot-booking">
+                    <i class="fa-solid fa-user" style="--i:4"></i>
+                    <span style="--g:4">Slot Booking</span>
+                </a>
+            </li>-->
+            <li>
+                <a href="/logout">
+                    <i class="fa-solid fa-right-from-bracket" style="--i:5"></i>
+                    <span style="--g:5">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <section class="menuDiv">
+        <form class="row g-3 ">
+            <div class="col-md-4">
+                <select class="form-select" name="courseInfo" id="idCourseInfo" required="required">
+                    <option value="" selected>Choose Course..</option>
+                    {{#each data}}
+                    <option value="{{this.value}}">{{this.display}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary mb-3" id="fetchCoursePlan"
+                    onclick="generateCoursePlan()">Generate</button>
+            </div>
+        </form>
+    </section>
+
+    <section id="tableSection1" class="table-responsive-lg p-3 hide" style="overflow-x:auto; margin-top: 45px;">
+        <table class="table table-sm table-bordered  table-striped" style="table-layout: fixed;">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 30px;" class="text-center">W#</th>
+                    <th scope="col" style="width: 50px;" class="text-center">Week Title</th>
+                    <th scope="col" style="width: 30px;" class="text-center">Sno</th>
+                    <th scope="col" style="width: 150px;" class="text-center">Topic</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Status</th>
+                    <th scope="col" style="width: 50px;" class="text-center">Duration</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>
+    </section>
+    <section class="text-center hide" id="addMessage">
+        <span style="font-size: 20px;">No Course Plan available..</span>
+    </section>
+
+    <script>
+        let globalPostCompletedTopics = ""
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+        function generateCoursePlan() {
+            let element = document.getElementById("idCourseInfo")
+            let data = element.value
+            if (data === "") {
+                element.setCustomValidity("Please Select an item in the list");
+                element.reportValidity();
+            }
+            else {
+                fetch("/faculty-confirmation", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ key: data, flag: "false" }),
+                }).then(res => res.json()).then(fetchedData => {
+                    if (fetchedData.fetchedData.coursePlan) {
+                        let coursePlan = fetchedData.fetchedData.coursePlan
+                        let links = fetchedData.fetchedData.postTopicsCompleted
+                        let individualStatus = fetchedData.fetchedData.individualStatus
+                        let confirmedTopics = Object.keys(fetchedData.fetchedData.confirmedTimestamp)
+                        globalPostCompletedTopics = links
+                        let table = document.getElementById("tableSection1")
+                        table.classList.remove("hide")
+                        let n = 1
+                        let tableBody = document.getElementById("tableBody")
+                        tableBody.innerHTML = ""
+
+                        let trIntro = document.createElement("tr")
+                        let td1Intro = document.createElement("td")
+                        let td2Intro = document.createElement("td")
+                        let td3Intro = document.createElement("td")
+                        let td4Intro = document.createElement("td")
+                        let td5Intro = document.createElement("td")
+                        let td6Intro = document.createElement("td")
+                        let td7Intro = document.createElement("td")
+                        let td8Intro = document.createElement("td")
+                        let urlIntro = document.createElement("a")
+                        let badgeIntro = document.createElement("span")
+                        let btn = document.createElement("button")
+
+                        td4Intro.innerHTML = "Course Introduction"
+                        td4Intro.setAttribute("id", "introTopic")
+
+                        td5Intro.setAttribute("class", "text-center") //------------
+
+                        /*if (links["intro"]) {
+                            urlIntro.setAttribute("href", links["intro"]["videoLink"])
+                            urlIntro.setAttribute("style", "text-decoration: none;")
+                            urlIntro.innerHTML = links["intro"]["videoLink"]
+                        } else {
+                            urlIntro.innerHTML = ""
+                        }*/
+
+                        if (links["intro"]) {
+                            btn.setAttribute("onclick", "playVideo('" + links["intro"]["videoLink"] + "')")
+                            btn.setAttribute("type", "button")
+                            btn.setAttribute("class", "btn btn-primary btn-sm")
+                            btn.innerHTML = "PLAY"
+                        } else {
+                            btn.setAttribute("type", "hidden")
+                        }
+
+                        td6Intro.setAttribute("class", "text-center")
+
+                        if (individualStatus["intro"] == "pending") {
+                            badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #ffc107")
+                            badgeIntro.innerHTML = "Pending"
+
+                            let btnIntro = document.createElement("button")
+                            btnIntro.setAttribute("type", "button")
+                            btnIntro.setAttribute("class", "btn btn-sm btn-rounded")
+                            btnIntro.setAttribute("onclick", "postForm('intro')")
+                            btnIntro.setAttribute("style", "background-color:#ffebc2;")
+                            btnIntro.innerHTML = "Confirm"
+
+                            td7Intro.appendChild(btnIntro)
+                        }
+                        else if (individualStatus["intro"] == "confirmed") {
+                            badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #28a745")
+                            badgeIntro.innerHTML = "Confirmed"
+                        }
+                        else if (individualStatus["intro"] == "denied") {
+                            badgeIntro.setAttribute("class", "badge badge-pill badge-danger")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #dc3545")
+                            badgeIntro.innerHTML = "Denied"
+                        }
+                        else if (individualStatus["intro"] == "editing") {
+                            badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                            badgeIntro.innerHTML = "Editing"
+                        }
+                        else {
+                            badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                            badgeIntro.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                            badgeIntro.innerHTML = "Production"
+                        }
+
+                        td7Intro.setAttribute("class", "text-center align-middle")
+                        td8Intro.setAttribute("class", "text-center align-middle")
+
+                        let introMins = 0
+                        let introSecs = 0
+                        if (confirmedTopics.includes("intro")) {
+                            let introDuration = links["intro"]["duration"]
+                            introMins = introDuration.split(":")[0]
+                            introSecs = introDuration.split(":")[1]
+                        }
+
+                        td8Intro.innerText = introMins + "m " + introSecs + "s"
+
+                        trIntro.appendChild(td1Intro)
+                        trIntro.appendChild(td2Intro)
+                        trIntro.appendChild(td3Intro)
+                        trIntro.appendChild(td4Intro)
+                        //td5Intro.appendChild(btn)
+                        //trIntro.appendChild(td5Intro)
+                        td6Intro.appendChild(badgeIntro)
+                        trIntro.appendChild(td6Intro)
+                        trIntro.appendChild(td8Intro)
+                        //trIntro.appendChild(td7Intro)
+                        tableBody.appendChild(trIntro)
+
+                        while (n <= parseInt(coursePlan.weeks)) {
+                            let W = "W" + n
+                            let t = 0
+                            let firstPrint = "undone"
+                            let includedWeekTopics = []
+                            for (var i = 1; i <= 10; i++) {
+                                let key = W + "-" + i
+
+                                if (!coursePlan[key]) {
+                                    continue
+                                }
+                                t++
+
+                                includedWeekTopics.push(key)
+
+                                let link = links[key]
+                                let tr = document.createElement("tr")
+                                let td1 = document.createElement("td")
+                                let td2 = document.createElement("td")
+                                let td3 = document.createElement("td")
+                                let td4 = document.createElement("td")
+                                let td5 = document.createElement("td")
+                                let urlBtn = document.createElement("button")
+                                let url = document.createElement("a")
+                                let btn = document.createElement("button")
+                                let badge = document.createElement("span")
+                                if (firstPrint == "undone") {
+                                    firstPrint = "done"
+                                    let td6 = document.createElement("td")
+                                    let td7 = document.createElement("td")
+                                    let td8 = document.createElement("td")
+
+                                    td1.setAttribute("rowspan", "7")
+                                    td1.setAttribute("class", "text-center align-middle")
+                                    td1.setAttribute("id", "id" + W)
+                                    td1.innerHTML = W
+
+                                    td2.setAttribute("rowspan", "7")
+                                    td2.setAttribute("class", "text-center align-middle")
+                                    td2.setAttribute("id", "id" + W + "Title")
+
+                                    if (!coursePlan[W]) { }
+                                    else {
+                                        td2.innerHTML = coursePlan[W]
+                                    }
+
+                                    td3.innerHTML = i
+
+                                    td4.innerHTML = coursePlan[key]
+                                    td4.setAttribute("id", key + "Topic")
+
+                                    /*if (link) {
+                                        url.setAttribute("href", link["videoLink"])
+                                        url.setAttribute("style", "text-decoration: none;")
+                                        url.innerHTML = link["videoLink"]
+                                    } else {
+                                        url.innerHTML = ""
+                                    }*/
+
+                                    td5.setAttribute("class", "text-center")
+                                    if (link) {
+                                        urlBtn.setAttribute("onclick", "playVideo('" + link["videoLink"] + "')")
+                                        urlBtn.setAttribute("type", "button")
+                                        urlBtn.setAttribute("class", "btn btn-primary btn-sm")
+                                        urlBtn.innerHTML = "PLAY"
+                                    } else {
+
+                                    }
+
+                                    td6.setAttribute("class", "text-center align-middle")
+
+                                    if (individualStatus[key] == "pending") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #ffc107")
+                                        badge.innerHTML = "Pending"
+
+                                        let btnIntro = document.createElement("button")
+                                        btn.setAttribute("type", "button")
+                                        btn.setAttribute("value", key)
+                                        btn.setAttribute("class", "btn btn-sm btn-rounded")
+                                        btn.setAttribute("onclick", "postForm(this.value)")
+                                        btn.setAttribute("style", "background-color:#ffebc2;")
+                                        btn.innerHTML = "Confirm"
+                                    }
+                                    else if (individualStatus[key] == "confirmed") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #28a745")
+                                        badge.innerHTML = "Confirmed"
+                                    }
+                                    else if (individualStatus[key] == "denied") {
+                                        badge.setAttribute("class", "badge badge-pill badge-danger")
+                                        badge.setAttribute("style", "color: #fff; background-color: #dc3545")
+                                        badge.innerHTML = "Denied"
+                                    }
+                                    else if (individualStatus[key] == "editing") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                        badge.innerHTML = "Editing"
+                                    }
+                                    else {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                        badge.innerHTML = "Production"
+                                    }
+
+                                    td7.setAttribute("class", "text-center align-middle")
+                                    td8.setAttribute("id", "duration-" + W)
+                                    td8.setAttribute("class", "text-center align-middle")
+
+                                    tr.appendChild(td1)
+                                    tr.appendChild(td2)
+                                    tr.appendChild(td3)
+                                    tr.appendChild(td4)
+                                    //td5.appendChild(url)
+                                    //if (link) {
+                                    //    td5.appendChild(urlBtn)
+                                    //}
+                                    //tr.appendChild(td5)
+                                    td6.appendChild(badge)
+                                    tr.appendChild(td6)
+
+                                    if (individualStatus[key] == "pending") {
+                                        td7.appendChild(btn)
+                                    }
+                                    tr.appendChild(td8)
+                                    //tr.appendChild(td7)
+                                }
+                                else {
+                                    td1.innerHTML = i
+
+                                    td2.innerHTML = coursePlan[key]
+                                    td2.setAttribute("id", key + "Topic")
+
+                                    /*if (link) {
+                                        url.setAttribute("href", link["videoLink"])
+                                        url.setAttribute("style", "text-decoration: none;")
+                                        url.innerHTML = link["videoLink"]
+                                    } else {
+                                        url.innerHTML = ""
+                                    }*/
+
+                                    td3.setAttribute("class", "text-center")
+                                    if (link) {
+                                        urlBtn.setAttribute("onclick", "playVideo('" + link["videoLink"] + "')")
+                                        urlBtn.setAttribute("type", "button")
+                                        urlBtn.setAttribute("class", "btn btn-primary btn-sm")
+                                        urlBtn.innerHTML = "PLAY"
+                                    } else {
+
+                                    }
+
+                                    td4.setAttribute("class", "text-center align-middle")
+
+                                    if (individualStatus[key] == "pending") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #ffc107")
+                                        badge.innerHTML = "Pending"
+
+                                        let btnIntro = document.createElement("button")
+                                        btn.setAttribute("type", "button")
+                                        btn.setAttribute("value", key)
+                                        btn.setAttribute("class", "btn btn-sm btn-rounded")
+                                        btn.setAttribute("onclick", "postForm(this.value)")
+                                        btn.setAttribute("style", "background-color:#ffebc2;")
+                                        btn.innerHTML = "Confirm"
+                                    }
+                                    else if (individualStatus[key] == "confirmed") {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #28a745")
+                                        badge.innerHTML = "Confirmed"
+                                    }
+                                    else if (individualStatus[key] == "denied") {
+                                        badge.setAttribute("class", "badge badge-pill badge-danger")
+                                        badge.setAttribute("style", "color: #fff; background-color: #dc3545")
+                                        badge.innerHTML = "Denied"
+                                    }
+                                    else {
+                                        badge.setAttribute("class", "badge rounded-pill d-inline")
+                                        badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                        badge.innerHTML = "Production"
+                                    }
+
+                                    td5.setAttribute("class", "text-center align-middle")
+
+                                    tr.appendChild(td1)
+                                    tr.appendChild(td2)
+                                    //td3.appendChild(url)
+                                    //if (link) {
+                                    //    td3.appendChild(urlBtn)
+                                    //}
+
+                                    //tr.appendChild(td3)
+                                    td4.appendChild(badge)
+                                    tr.appendChild(td4)
+
+                                    if (individualStatus[key] == "pending") {
+                                        td5.appendChild(btn)
+                                    }
+
+                                    //tr.appendChild(td5)
+                                }
+                                tableBody.appendChild(tr)
+                            }
+                            n++;
+                            let changeRowSpanWeekNo = document.getElementById("id" + W)
+                            let changeRowSpanWeekTitle = document.getElementById("id" + W + "Title")
+                            let changeRowSpanWeekDuration = document.getElementById("duration-" + W)
+                            if (changeRowSpanWeekNo != null) {
+                                changeRowSpanWeekNo.setAttribute("rowspan", t)
+                                changeRowSpanWeekTitle.setAttribute("rowspan", t)
+                                changeRowSpanWeekDuration.setAttribute("rowspan", t)
+                            }
+                            else {
+                                break
+                            }
+
+                            let min = 0
+                            let sec = 0
+                            for (var i = 0; i < includedWeekTopics.length; i++) {
+                                if (confirmedTopics.includes(includedWeekTopics[i])) {
+                                    let duration = links[includedWeekTopics[i]]["duration"]
+                                    min = min + parseInt(duration.split(":")[0])
+                                    sec = sec + parseInt(duration.split(":")[1])
+                                }
+                            }
+                            min = min + Math.floor(sec / 60)
+                            sec = sec % 60
+                            changeRowSpanWeekDuration.innerText = min + "m " + sec + "s"
+                        }
+                    }
+                    else {
+                        let addMessage = document.getElementById("addMessage")
+                        addMessage.classList.remove("hide")
+                    }
+
+                });
+            }
+        }
+
+        function openCoursePlan(id) {
+            let element = document.getElementById("idCourseInfo")
+            element.value = id
+            let generateBtn = document.getElementById("fetchCoursePlan")
+            generateBtn.click()
+        }
+
+        function playVideo(url) {
+            let form = document.createElement("form")
+            form.setAttribute("method", "POST")
+            form.setAttribute("action", "/faculty-video-play")
+
+            let urlHidden = document.createElement("input")
+            urlHidden.setAttribute("type", "hidden")
+            urlHidden.setAttribute("name", "url")
+            urlHidden.setAttribute("value", url)
+
+            form.appendChild(urlHidden)
+            document.body.appendChild(form)
+            form.submit()
+        }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>

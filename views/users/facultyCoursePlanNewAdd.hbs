@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/styleFacultyCoursePlanNewAdd.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--<script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };  
+    </script>-->
+</head>
+
+<body id="body">
+    <div class="overlay" onclick="off()"></div>
+    <button style="display: none;" id="nonPurpose" value="{{justLoggedIn}}"></button>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40"
+                    style="margin-right:5px" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/faculty-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-course-plan">
+                    <i class="fa fa-solid fa-book" style="--i:2"></i>
+                    <span style="--g:2">Course Plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-confirmation">
+                    <i class="fa-solid fa-check-to-slot" style="--i:3"></i>
+                    <span style="--g:3">Confirmation</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-slot-booking">
+                    <i class="fa-solid fa-user" style="--i:4"></i>
+                    <span style="--g:4">Slot Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa-solid fa-right-from-bracket" style="--i:5"></i>
+                    <span style="--g:5">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <section id="tableSection" class="table-responsive-lg p-5" style="overflow-x:auto; ">
+        <table class="table table-sm table-bordered  table-striped " style="table-layout: fixed;" id="coursePlanTable">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 20px;" class="text-center">W#</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Week Title</th>
+                    <th scope="col" style="width: 14px;" class="text-center">Sno</th>
+                    <th scope="col" style="width: 140px;" class="text-center">Topic</th>
+                    <th scope="col" style="width: 31px;" class="text-center"></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Course Introduction</td>
+                    <td></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </section>
+    <section class="row text-center" style="margin-top:80px;">
+        <div class="col-md-12 m-1">
+            <button type="submit" class="btn btn-primary btn-rounded" style="margin-right:20px ;"
+                onclick="addDetails()">Update</button>
+            <button type="button" class="btn btn-primary btn-rounded" onclick="addWeek()">Add Week</button>
+        </div>
+    </section>
+    <input type="hidden" value="{{id}}" name="id" id="id">
+    <input type="hidden" value="{{credits}}" name="credits" id="credits">
+    <input type="hidden" value="true" name="key" id="key">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+        let globalTopicNumber = {}
+        window.onload = createTable
+        let globalWeekNo = 0
+
+        function createTable() {
+            let credits = parseInt(document.getElementById("credits").value)
+            let weekNo = 1
+            if (credits == 4) {
+                weekNo = 12
+            }
+            else if (credits == 6) {
+                weekNo = 14
+            }
+            else {
+                weekNo = 7
+            }
+            globalWeekNo = weekNo
+            let n = 1
+            let tableBody = document.getElementById("tableBody")
+            let sform = document.getElementById("submitForm")
+            while (n <= weekNo) {
+                let W = "W" + n
+                globalTopicNumber[W] = 5
+                for (var i = 1; i <= 5; i++) {
+                    let tr = document.createElement("tr")
+                    tr.setAttribute("id", "row" + W)
+
+                    let td1 = document.createElement("td")
+                    let td2 = document.createElement("td")
+                    let td3 = document.createElement("td")
+
+                    let inp1 = document.createElement("input")
+                    let inp2 = document.createElement("input")
+                    if (i === 1) {
+                        let td4 = document.createElement("td")
+                        let td5 = document.createElement("td")
+                        let btn = document.createElement("button")
+
+                        td1.setAttribute("rowspan", "5")
+                        td1.setAttribute("id", "weekNoRowspan" + W)
+                        td1.setAttribute("class", "text-center align-middle")
+                        td1.innerHTML = W
+
+                        td2.setAttribute("rowspan", "5")
+                        td2.setAttribute("id", "weekTitleRowspan" + W)
+                        td2.setAttribute("class", "text-center align-middle")
+
+                        td3.innerHTML = i
+
+                        inp1.setAttribute("type", "text")
+                        inp1.setAttribute("style", "width: 100%")
+                        inp1.setAttribute("name", W)
+                        inp1.setAttribute("id", W)
+
+                        inp2.setAttribute("type", "text")
+                        inp2.setAttribute("style", "width: 100%")
+                        inp2.setAttribute("name", W + "-" + i)
+                        inp2.setAttribute("id", W + "-" + i)
+
+                        td5.setAttribute("rowspan", "5")
+                        td5.setAttribute("id", "topicAddButtonRowspan" + W)
+                        td5.setAttribute("class", "text-center align-middle")
+
+                        btn.setAttribute("type", "button")
+                        btn.setAttribute("class", "btn btn-info btn-rounded btn-sm")
+                        btn.setAttribute("value", W)
+                        btn.setAttribute("onclick", "addTopic(this.value)")
+                        btn.innerHTML = "Add New Topic"
+
+                        tr.appendChild(td1)
+                        td2.appendChild(inp1)
+                        tr.appendChild(td2)
+                        tr.appendChild(td3)
+                        td4.appendChild(inp2)
+                        tr.appendChild(td4)
+                        td5.appendChild(btn)
+                        tr.appendChild(td5)
+
+                    }
+                    else {
+                        td1.innerHTML = i
+
+                        inp1.setAttribute("type", "text")
+                        inp1.setAttribute("style", "width: 100%")
+                        inp1.setAttribute("name", W + "-" + i)
+                        inp1.setAttribute("id", W + "-" + i)
+
+                        tr.appendChild(td1)
+                        td2.appendChild(inp1)
+                        tr.appendChild(td2)
+                    }
+
+                    tableBody.appendChild(tr)
+                }
+                n++;
+            }
+        }
+
+        function addTopic(week) {
+            let weekno = parseInt(week.split("W")[1])
+            let newTopicCount = parseInt(globalTopicNumber[week]) + 1
+            let weekNoRowspan = document.getElementById("weekNoRowspan" + week)
+            let weekTitleRowspan = document.getElementById("weekTitleRowspan" + week)
+            let topicAddButtonRowspan = document.getElementById("topicAddButtonRowspan" + week)
+            let table = document.getElementById("coursePlanTable")
+
+            let reqTableIndex = 2
+            for (var i = 1; i <= weekno; i++) {
+                reqTableIndex = reqTableIndex + parseInt(globalTopicNumber["W" + i])
+            }
+            globalTopicNumber[week] = newTopicCount
+
+            let newtr = table.insertRow(reqTableIndex)
+            let newtd1 = document.createElement("td")
+            let newtd2 = document.createElement("td")
+            let newinp = document.createElement("input")
+
+            weekNoRowspan.setAttribute("rowspan", newTopicCount)
+            weekTitleRowspan.setAttribute("rowspan", newTopicCount)
+            topicAddButtonRowspan.setAttribute("rowspan", newTopicCount)
+
+            newtd1.innerHTML = newTopicCount
+
+            newinp.setAttribute("type", "text")
+            newinp.setAttribute("style", "width: 100%")
+            newinp.setAttribute("name", week + "-" + newTopicCount)
+            newinp.setAttribute("id", week + "-" + newTopicCount)
+
+            newtr.appendChild(newtd1)
+            newtd2.appendChild(newinp)
+            newtr.appendChild(newtd2)
+        }
+
+        function addWeek() {
+            globalWeekNo++
+            let tableBody = document.getElementById("tableBody")
+            let W = "W" + globalWeekNo
+            globalTopicNumber[W] = 5
+            for (var i = 1; i <= 5; i++) {
+                let tr = document.createElement("tr")
+                let td1 = document.createElement("td")
+                let td2 = document.createElement("td")
+                let td3 = document.createElement("td")
+
+                let inp1 = document.createElement("input")
+                let inp2 = document.createElement("input")
+                if (i === 1) {
+                    let td4 = document.createElement("td")
+                    let td5 = document.createElement("td")
+                    let inp3 = document.createElement("input")
+                    let btn = document.createElement("button")
+
+                    td1.setAttribute("rowspan", "7")
+                    td1.setAttribute("class", "text-center align-middle")
+                    td1.innerHTML = W
+
+                    td2.setAttribute("rowspan", "7")
+                    td2.setAttribute("class", "text-center align-middle")
+
+                    td3.innerHTML = i
+
+                    inp1.setAttribute("type", "text")
+                    inp1.setAttribute("style", "width: 100%")
+                    inp1.setAttribute("name", W)
+                    inp1.setAttribute("id", W)
+
+                    inp2.setAttribute("type", "text")
+                    inp2.setAttribute("style", "width: 100%")
+                    inp2.setAttribute("name", W + "-" + i)
+                    inp2.setAttribute("id", W + "-" + i)
+
+                    td5.setAttribute("rowspan", "5")
+                    td5.setAttribute("id", "topicAddButtonRowspan" + W)
+                    td5.setAttribute("class", "text-center align-middle")
+
+                    btn.setAttribute("type", "button")
+                    btn.setAttribute("class", "btn btn-info btn-rounded btn-sm")
+                    btn.setAttribute("value", W)
+                    btn.setAttribute("onclick", "addTopic(this.value)")
+                    btn.innerHTML = "Add"
+
+                    tr.appendChild(td1)
+                    td2.appendChild(inp1)
+                    tr.appendChild(td2)
+                    tr.appendChild(td3)
+                    td4.appendChild(inp2)
+                    tr.appendChild(td4)
+                    td5.appendChild(btn)
+                    tr.appendChild(td5)
+                }
+                else {
+                    td1.innerHTML = i
+
+                    inp1.setAttribute("type", "text")
+                    inp1.setAttribute("style", "width: 100%")
+                    inp1.setAttribute("name", W + "-" + i)
+                    inp1.setAttribute("id", W + "-" + i)
+
+                    tr.appendChild(td1)
+                    td2.appendChild(inp1)
+                    tr.appendChild(td2)
+                }
+                tableBody.appendChild(tr)
+            }
+        }
+
+
+        function addDetails() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to Update?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Submit'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Course Plan has been Added',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then((response) => {
+                        form = document.createElement("form")
+                        form.setAttribute('method', "POST");
+                        form.setAttribute('action', "/faculty-course-plan-new-add");
+                        for (var i = 1; i <= globalWeekNo; i++) {
+                            let inp2 = document.createElement("input")
+                            let weekTopicValue = document.getElementById("W" + i).value
+
+                            inp2.setAttribute("type", "hidden")
+                            inp2.setAttribute("name", "W" + i)
+                            inp2.setAttribute("value", weekTopicValue)
+                            form.appendChild(inp2)
+                            for (var j = 1; j <= parseInt(globalTopicNumber["W" + i]); j++) {
+                                let inp = document.createElement("input")
+                                let symbol = "W" + i + "-" + j
+
+                                let topicValue = document.getElementById(symbol).value
+
+                                inp.setAttribute("type", "hidden")
+                                inp.setAttribute("name", symbol)
+                                inp.setAttribute("value", topicValue)
+
+                                form.appendChild(inp)
+                            }
+                        }
+                        let inp3 = document.createElement("input")
+                        let inp4 = document.createElement("input")
+                        let inp6 = document.createElement("input")
+
+                        let id = document.getElementById("id").value
+                        let key = document.getElementById("key").value
+
+                        inp3.setAttribute("type", "hidden")
+                        inp3.setAttribute("name", "id")
+                        inp3.setAttribute("value", id)
+
+                        inp4.setAttribute("type", "hidden")
+                        inp4.setAttribute("name", "key")
+                        inp4.setAttribute("value", key)
+
+                        inp6.setAttribute("type", "hidden")
+                        inp6.setAttribute("name", "weeks")
+                        inp6.setAttribute("value", globalWeekNo)
+
+                        form.appendChild(inp3)
+                        form.appendChild(inp4)
+                        form.appendChild(inp6)
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    })
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
+

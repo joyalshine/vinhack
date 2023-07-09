@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/styleFacultyCoursePlanUpdate.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--<script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };  
+    </script>-->
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <button style="display: none;" id="nonPurpose" value="{{justLoggedIn}}"></button>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40"
+                    style="margin-right:5px" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/faculty-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-course-plan">
+                    <i class="fa fa-solid fa-book" style="--i:2"></i>
+                    <span style="--g:2">Course Plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-confirmation">
+                    <i class="fa-solid fa-check-to-slot" style="--i:3"></i>
+                    <span style="--g:3">Confirmation</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-slot-booking">
+                    <i class="fa-solid fa-user" style="--i:4"></i>
+                    <span style="--g:4">Slot Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa-solid fa-right-from-bracket" style="--i:5"></i>
+                    <span style="--g:5">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <section id="tableSection" class="table-responsive-lg p-4" style="overflow-x:auto; ">
+        <table class="table table-sm table-bordered  table-striped " style="table-layout: fixed;" id="editTable">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 20px;" class="text-center">W#</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Week Title</th>
+                    <th scope="col" style="width: 14px;" class="text-center">Sno</th>
+                    <th scope="col" style="width: 140px;" class="text-center">Topic</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <form action="/faculty-course-plan-update" method="post" id="form">
+                    {{#if introDisplayFlag}}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Course Introduction</td>
+                    </tr>
+                    {{/if}}
+                    <tr>
+                        <td rowspan="{{rowspan}}" class="text-center align-middle" id="week">{{week}}</td>
+                        <td rowspan="{{rowspan}}" class="text-center align-middle" id="weekTitle"><input type="text" style="width: 100%;"
+                                name="{{week}}" value="{{title}}"></td>
+                        <td>1</td>
+                        <td><input type="text" style="width: 100%;" value="{{secondTitle}}" id="{{week}}-1" name="{{week}}-1"></td>
+                    </tr>
+                    {{#each topics}}
+                    <tr>
+                        <td>{{this.index}}</td>
+                        <td><input type="text" style="width: 100%;" value="{{this.title}}" id="{{this.week}}-{{this.index}}" name="{{this.week}}-{{this.index}}"></td>
+                    </tr>
+                    {{/each}}
+            </tbody>
+        </table>
+    </section>
+    <section class="row text-center" style="margin-top:80px;">
+        <div class="col-md-12 m-1">
+            <button type="submit" class="btn btn-primary btn-rounded" style="margin-right:20px ;">Update</button>
+            <button type="button" class="btn btn-primary btn-rounded" onclick="addTopic()">Add Topic</button>
+        </div>
+    </section>
+    <input type="hidden" value="{{id}}" name="id" id="id">
+    <input type="hidden" value="true" name="key">
+    </form>
+    <input type="hidden" value="{{introDisplayFlag}}" id="introStatus">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+        $('form').submit(function (ev) {
+            ev.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to Update?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Submit'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Course Plan has been Updated',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then((response) => {
+                        $(this).unbind('submit').submit()
+                    })
+                }
+            })
+        });
+
+        function addTopic() {
+            let week = document.getElementById("week")
+            let weekno = parseInt(week.innerHTML.split("W")[1])
+            let tableBody = document.getElementById("tableBody")
+            let newTopicCount = parseInt(tableBody.childElementCount)
+            let table = document.getElementById("editTable")
+            let weekTitleRowspan = document.getElementById("weekTitle")
+            let introStatus = document.getElementById("introStatus").value
+            if(introStatus == "true"){
+                newTopicCount--;
+            }
+
+            let newtr = table.insertRow()
+            let newtd1 = document.createElement("td")
+            let newtd2 = document.createElement("td")
+            let newinp = document.createElement("input")
+
+            week.setAttribute("rowspan", newTopicCount)
+            weekTitleRowspan.setAttribute("rowspan", newTopicCount)
+
+            newtd1.innerHTML = newTopicCount
+
+            newinp.setAttribute("type", "text")
+            newinp.setAttribute("style", "width: 100%")
+            newinp.setAttribute("name", "W" + weekno + "-" + newTopicCount)
+            newinp.setAttribute("form", "form")
+
+            newtr.appendChild(newtd1)
+            newtd2.appendChild(newinp)
+            newtr.appendChild(newtd2)
+        }
+
+        window.onload = disableEditing()
+        function disableEditing(){
+            let week = document.getElementById("week").innerHTML
+            let tableBody = document.getElementById("tableBody")
+            let newTopicCount = parseInt(tableBody.childElementCount) - 1
+            let introStatus = document.getElementById("introStatus").value
+            let id = document.getElementById("id").value
+            if(introStatus == "true"){
+                newTopicCount--;
+            }
+            let pageTopics = []
+            for(var i=1;i<=newTopicCount;i++){
+                pageTopics.push(week + "-" + i)
+            }
+            fetch("/faculty-course-plan-update", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ key: "fetch", id:id}),
+                }).then(res => res.json()).then(confirmedTopics => {
+                    for(var i=0;i<pageTopics.length;i++){
+                        if(confirmedTopics.includes(pageTopics[i])){
+                            let row = document.getElementById(pageTopics[i])
+                            row.setAttribute("disabled","true")
+                        }
+                    }
+                })
+        }
+
+    </script>
+</body>
+
+</html>

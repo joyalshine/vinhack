@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/stylePreProduction.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <header class="text-center" id="preProductionHeader">
+        <div>
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHeaderLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/pre-production-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-production-form">
+                    <i class="fa-solid fa-square-pen" style="--i:2"></i>
+                    <span style="--g:2">form</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-course-plan">
+                    <i class="fa fa-folder" style="--i:3"></i>
+                    <span style="--g:3">Course Plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-shedule-view">
+                    <i class="fa fa-globe" style="--i:4"></i>
+                    <span style="--g:4">Shedule</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-shedule-booking">
+                    <i class="fa fa-globe" style="--i:5"></i>
+                    <span style="--g:5">Shedule booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-production-history">
+                    <i class="fa fa-globe" style="--i:6"></i>
+                    <span style="--g:6">Reshoot/History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa fa-globe" style="--i:7"></i>
+                    <span style="--g:7">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <section class="" style="display: flex; justify-content:center;">
+        <div class="preProductionForm m-5 p-3 text-white">
+            <form action="/pre-production-form" method="post">
+            <div class="row m-3">
+                    <div class="col-3">
+                        <label for="idSemester" class="m-1">Semester</label>
+                        <select class="form-select" name="semester" id="idSemester" required="required"
+                            onchange="dynamicCourseList()">
+                            <option value="" selected>Semester...</option>
+                            {{#each semesters}}
+                            <option value="{{this}}">{{this}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+                <div class="row m-3">
+                    <div class="col">
+                        <label for="idCourseInfo" class="m-1">Course name</label>
+                        <select class="form-select" name="courseInfo" id="idCourseInfo" required="required"
+                            onchange="topics(this.value)">
+                            <option value="" selected>Course Name...</option>
+                            {{#each courseList}}
+                            <option value="{{this.value}}">{{this.display}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="idMinutesRecorded" class="m-1">Total Recorded Duration</label>
+                        <div>
+                            <input type="number" class="duration mx-1" id="totalMinutesRecorded" name="minutesRecorded"
+                                value="0" placeholder="Minutes" style="width: 100px;" required="required" readonly>
+                            <input type="number" class="duration mx-1" id="totalSecondsRecorded" name="secondsRecorded"
+                                value="0" placeholder="Seconds" style="width: 100px;" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-3 ">
+                    <div class="col-md-6">
+                        <label for="idNoOfVideos" class="m-1">No. of videos Recorded</label>
+                        <input type="number" class="form-control" name="noOfVideosRecorded" id="idNoOfVideos"
+                            placeholder="The value must be a number" required onchange="pathInputAdd()" onc>
+                    </div>
+                    <div class="col">
+                        <label for="edit-text" class="m-1">Topics Inculded</label>
+                        <input type="text" class="form-control" name="topicsIncluded" id="edit-text"
+                            placeholder="Add Week and Topic no." required="required" readonly>
+                    </div>
+                </div>
+
+                <div class="row m-4">
+                    <div class="col-md-8 field text-center">
+                        <span class="m-2">Select Topic</span>
+                        <select name="" type="number" id="input-W" class="m-2">
+                            <option value="" selected></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 field text-center">
+                        <button type="button" class="btn btn-primary m-2" id="addedit1" onclick="topicAdd()">
+                            Add
+                        </button>
+                        <button type="button" class="btn btn-primary m-2" id="addedit2" onclick="topicRemove()">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="container" id="parentPathAdd">
+                    <div class="row" id="pathAdd">
+
+                    </div>
+                </div>
+
+                <div class="row m-2 mt-0">
+                    <div class="col-md-12">
+                        <label for="idRemarks" class="">Remarks</label>
+                        <input type="text" name="remarks" class="form-control" id="idRemarks" required>
+                    </div>
+                </div>
+
+                <div class="col-md-12 text-center mt-5">
+                    <button type="submit" class="btn text-white glow-on-hover"
+                        id="submitButtonPreProductionForm">SUBMIT</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $('form').submit(function (ev) {
+            ev.preventDefault();
+
+            let topics = document.getElementById("edit-text").value
+            let n = document.getElementById('idNoOfVideos').value
+            let pathFlag = false
+            for (var i = 1; i <= n; i++) {
+                let id = "path-" + i
+                let value = document.getElementById(id).value
+                if (!value) {
+                    pathFlag = true
+                    break
+                }
+            }
+            if (!topics) {
+                Swal.fire(
+                    'Included Topics?',
+                    'Please enter the included topics.',
+                    'question'
+                )
+            }
+            else if (pathFlag) {
+                Swal.fire(
+                    'Paths?',
+                    'Please enter the Paths.',
+                    'question'
+                )
+            }
+            else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to submit?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Submit'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Your form has been Submitted',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then((response) => {
+                            $(this).unbind('submit').submit()
+                        })
+                    }
+                })
+            }
+        });
+
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+
+        let globalCourseList = {}
+        window.onload = function showLoggedIn() {
+            fetch("/pre-production-form", {
+                headers: { 'Content-Type': "application/json" },
+                method: "POST",
+                body: JSON.stringify({flag: "courseList"}),
+            }).then(res => res.json()).then(fetchedData => {
+                globalCourseList = fetchedData.courses
+            })
+        }
+
+        function topicAdd() {
+            let display = document.getElementById('edit-text')
+            var w = document.getElementById('input-W')
+            //var sno = document.getElementById('input-Sno')
+
+            if (w.value === '') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: false,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Select #W'
+                })
+            }
+            /*else if (w.value != "intro" && sno.value === '') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: false,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Select Sno'
+                })
+            }*/
+            else {
+                display.value = display.value + w.value + " " + "|" + " "
+                var select = document.getElementById("input-W");
+                select.value = ""
+                /*if (w.value == "intro") {
+                    display.value = display.value + w.value + " " + "|" + " "
+                }
+                else {
+                    display.value = display.value + w.value + "-" + sno.value + " " + "|" + " "
+                }
+                if (sno.value === "7") {
+                    sno.value = "1"
+                } else {
+                    sno.value = parseInt(sno.value) + 1
+                }*/
+            }
+
+        }
+
+        function topicRemove() {
+            let display = document.getElementById('edit-text')
+            let data = display.value
+            let temp = 0
+            let prevTemp = 0
+            for (var i = 0; i < data.length; i++) {
+                if (data[i] == '|') {
+                    prevTemp = temp
+                    temp = i
+                }
+            }
+            if (prevTemp === 0) {
+                data = data.slice(0, prevTemp)
+            } else {
+                data = data.slice(0, prevTemp + 2)
+            }
+            display.value = data
+        }
+
+        function pathInputAdd() {
+            let maindiv = document.getElementById('parentPathAdd')
+            let base = document.getElementById('pathAdd')
+            let n = document.getElementById('idNoOfVideos').value
+            base.innerHTML = ''
+            let totalMinutes = document.getElementById("totalMinutesRecorded")
+            let totalSeconds = document.getElementById("totalSecondsRecorded")
+            totalMinutes.value = "0"
+            totalSeconds.value = "0"
+
+            maindiv.setAttribute('class', "row  m-3");
+
+            for (var i = 1; i <= n; i++) {
+                var div = document.createElement("div")
+                div.setAttribute("class", "row")
+                var input = document.createElement('input')
+                input.setAttribute('type', 'text');
+                input.setAttribute('name', "path-" + i);
+                input.setAttribute('id', "path-" + i);
+                input.setAttribute('class', " m-2 col-md-6 duration");
+                input.setAttribute('placeholder', "Enter Path " + i);
+                base.appendChild(input);
+
+                var input1 = document.createElement('input')
+                input1.setAttribute('type', 'text');
+                input1.setAttribute('name', "path-" + i + "-" + "mins");
+                input1.setAttribute('class', " m-2 col-md-2 duration individualDuration");
+                input1.setAttribute('placeholder', "Minutes");
+
+                var input2 = document.createElement('input')
+                input2.setAttribute('type', 'text');
+                input2.setAttribute('name', "path-" + i + "-" + "sec");
+                input2.setAttribute('class', " m-2 col-md-2 duration individualDuration");
+                input2.setAttribute('placeholder', "Seconds");
+
+                div.appendChild(input)
+                div.appendChild(input1)
+                div.appendChild(input2)
+                base.appendChild(div);
+            }
+            autoCalculateTotal(n)
+        }
+
+        function autoCalculateTotal(key) {
+            let elements = document.getElementsByClassName("individualDuration")
+            let totalMinutes = document.getElementById("totalMinutesRecorded")
+            let totalSeconds = document.getElementById("totalSecondsRecorded")
+            $(".individualDuration").bind("change", function (e) {
+                let elementChanged = e.target
+                timeType = elementChanged.getAttribute("name").split("-")[2]
+                if (timeType == "mins") {
+                    totalMinutes.value = parseInt(totalMinutes.value) + parseInt(elementChanged.value)
+                }
+                else {
+                    let s = parseInt(totalSeconds.value) + parseInt(elementChanged.value)
+                    var minutes = parseInt(totalMinutes.value) + Math.floor((s) / 60);
+                    var seconds = (s) % 60
+                    totalMinutes.value = minutes
+                    totalSeconds.value = seconds
+                }
+            })
+        }
+
+        function topics(id) {
+            if (id === "") { }
+            else {
+                fetch("/pre-production-form", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ key: id, flag: "fetch" }),
+                }).then(res => res.json()).then(data => {
+                    let n = data.topics.sort()
+                    console.log(n)
+                    var select = document.getElementById("input-W");
+                    select.innerHTML = ""
+
+                    var s = document.createElement("option")
+                    s.text = ""
+                    s.value = ""
+                    s.setAttribute("selected", "true")
+                    select.appendChild(s)
+
+                    for (var i = 0; i < n.length; i++) {
+                        var option = document.createElement("option")
+                        option.text = n[i]
+                        option.value = n[i]
+                        select.appendChild(option)
+                    }
+                });
+            }
+        }
+
+        function dynamicCourseList() {
+            let semester = document.getElementById("idSemester").value
+            console.log(globalCourseList)
+            if(semester){
+                $("#idCourseInfo").empty()
+                $("#idCourseInfo").append(`
+                    <option value="" selected>Choose Course..</option>
+                `)
+                for(var i = 0; i < globalCourseList.length; i++){
+                    console.log(globalCourseList[i].semester == parseInt(semester))
+                    if(globalCourseList[i].semester == parseInt(semester)){
+                        $("#idCourseInfo").append(`
+                            <option value="${globalCourseList[i].value}">${globalCourseList[i].display}</option>
+                        `)
+                    }
+                }
+            }
+            else{
+                $("#idCourseInfo").empty()
+                $("#idCourseInfo").append(`
+                    <option value="" selected>Choose Course..</option>
+                `)
+                for(var i = 0; i < globalCourseList.length; i++){
+                    $("#idCourseInfo").append(`
+                        <option value="${globalCourseList[i].value}">${globalCourseList[i].display}</option>
+                    `)
+                }
+            }
+            
+        }
+    </script>
+</body>
+
+</html>

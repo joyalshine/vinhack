@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/stylePreCoursePlan.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/pre-production-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-production-form">
+                    <i class="fa-solid fa-square-pen" style="--i:2"></i>
+                    <span style="--g:2">form</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-course-plan">
+                    <i class="fa fa-folder" style="--i:3"></i>
+                    <span style="--g:3">Course Plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-shedule-view">
+                    <i class="fa fa-globe" style="--i:4"></i>
+                    <span style="--g:4">Shedule</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-shedule-booking">
+                    <i class="fa fa-globe" style="--i:5"></i>
+                    <span style="--g:5">Shedule booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pre-production-history">
+                    <i class="fa fa-globe" style="--i:6"></i>
+                    <span style="--g:6">Reshoot/History</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa fa-globe" style="--i:7"></i>
+                    <span style="--g:7">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="container">
+        <section class="menuDiv row">
+            <div class="col-md-4">
+                <select class="form-select m-1" name="CourseId" id="idCourseInfo">
+                    <option value="" selected>Select Course...</option>
+                    {{# each courseList}}
+                    <option value="{{this.value}}">{{this.display}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary m-1" id="generateSheduleBtn"
+                    onclick="generateCoursePlan()">Generate</button>
+            </div>
+        </section>
+    </div>
+
+    <section id="tableSection" class="table-responsive-lg p-4 container">
+
+    </section>
+    <section class="text-center mt-5 hide" id="addMessage">
+        <span style="font-size: 20px;">No Data available..</span>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        });
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+        function generateCoursePlan() {
+            let id =document.getElementById("idCourseInfo").value
+            fetch("/pre-course-plan", {
+                headers: { 'Content-Type': "application/json" },
+                method: "POST",
+                body: JSON.stringify({ courseId:id  }),
+            }).then(res => res.json()).then(response => {
+                console.log(response)
+                let addMessage = document.getElementById("addMessage")
+                addMessage.classList.add("hide")
+                let coursePlan = response.coursePlan
+                let links = response.postTopicsCompleted
+                let individualStatus = response.individualStatus
+                let display = document.getElementById("tableSection")
+                display.innerHTML = ""
+                if (coursePlan) {
+                    console.log(coursePlan)
+                    let table = document.createElement("table")
+                    let tableHead = document.createElement("thead")
+                    let tableBody = document.createElement("tbody")
+
+                    table.setAttribute("class", "table table-sm table-bordered table-striped")
+                    table.setAttribute("style", "table-layout: fixed;")
+
+                    let htr = document.createElement("tr")
+                    let th1 = document.createElement("th")
+                    let th2 = document.createElement("th")
+                    let th3 = document.createElement("th")
+                    let th4 = document.createElement("th")
+                    //let th5 = document.createElement("th")
+                    let th6 = document.createElement("th")
+
+                    th1.setAttribute("class", "text-center")
+                    th1.setAttribute("style", "width: 30px;")
+                    th1.innerHTML = "W#"
+                    th2.setAttribute("class", "text-center")
+                    th2.setAttribute("style", "width: 50px;")
+                    th2.innerHTML = "Week Title"
+                    th3.setAttribute("class", "text-center")
+                    th3.setAttribute("style", "width: 30px;")
+                    th3.innerHTML = "Sno"
+                    th4.setAttribute("class", "text-center")
+                    th4.setAttribute("style", "width: 150px;")
+                    th4.innerHTML = "Topic"
+                    th6.setAttribute("class", "text-center")
+                    th6.setAttribute("style", "width: 50px;")
+                    th6.innerHTML = "Status"
+
+                    htr.appendChild(th1)
+                    htr.appendChild(th2)
+                    htr.appendChild(th3)
+                    htr.appendChild(th4)
+                    htr.appendChild(th6)
+
+                    tableHead.appendChild(htr)
+
+                    let n = 1
+
+                    let trIntro = document.createElement("tr")
+                    let td1Intro = document.createElement("td")
+                    let td2Intro = document.createElement("td")
+                    let td3Intro = document.createElement("td")
+                    let td4Intro = document.createElement("td")
+                    let td6Intro = document.createElement("td")
+                    let badgeIntro = document.createElement("span")
+
+                    td4Intro.innerHTML = "Course Introduction"
+
+                    td6Intro.setAttribute("class", "text-center")
+
+                    if (individualStatus["intro"] == "pending") {
+                        badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                        badgeIntro.setAttribute("style", "color: #fff; background-color: #ffc107")
+                        badgeIntro.innerHTML = "Pending"
+                    }
+                    else if (individualStatus["intro"] == "confirmed") {
+                        badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                        badgeIntro.setAttribute("style", "color: #fff; background-color: #28a745")
+                        badgeIntro.innerHTML = "Confirmed"
+                    }
+                    else if (individualStatus["intro"] == "denied") {
+                        badgeIntro.setAttribute("class", "badge badge-pill badge-danger")
+                        badgeIntro.setAttribute("style", "color: #fff; background-color: #dc3545")
+                        badgeIntro.innerHTML = "Denied"
+                    }
+                    else if (individualStatus["intro"] == "editing") {
+                        badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                        badgeIntro.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                        badgeIntro.innerHTML = "Editing"
+                    }
+                    else if (individualStatus["intro"] == "reshoot") {
+                        badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                        badgeIntro.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                        badgeIntro.innerHTML = "Reshoot"
+                    }
+                    else {
+                        badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                        badgeIntro.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                        badgeIntro.innerHTML = "Production"
+                    }
+
+                    trIntro.appendChild(td1Intro)
+                    trIntro.appendChild(td2Intro)
+                    trIntro.appendChild(td3Intro)
+                    trIntro.appendChild(td4Intro)
+                    td6Intro.appendChild(badgeIntro)
+                    trIntro.appendChild(td6Intro)
+
+                    tableBody.appendChild(trIntro)
+
+                    table.appendChild(tableHead)
+                    table.appendChild(tableBody)
+                    display.appendChild(table)
+
+                    while (n <= parseInt(coursePlan.weeks)) {
+                        console.log(parseInt(coursePlan.weeks))
+                        console.log(n)
+                        let W = "W" + n
+                        let t = 0
+                        let firstPrint = "undone"
+                        for (var i = 1; i <= 10; i++) {
+                            let key = W + "-" + i
+
+                            if (!(coursePlan[key])) {
+                                continue
+                            }
+                            t++
+                            let link = links[key]
+                            let tr = document.createElement("tr")
+                            let td1 = document.createElement("td")
+                            let td2 = document.createElement("td")
+                            let td3 = document.createElement("td")
+                            let td4 = document.createElement("td")
+                            let td5 = document.createElement("td")
+                            let badge = document.createElement("span")
+                            if (firstPrint == "undone") {
+                                firstPrint = "done"
+                                let td6 = document.createElement("td")
+
+                                td1.setAttribute("rowspan", "7")
+                                td1.setAttribute("class", "text-center align-middle")
+                                td1.setAttribute("id", "id" + W)
+                                td1.innerHTML = W
+
+                                td2.setAttribute("rowspan", "7")
+                                td2.setAttribute("class", "text-center align-middle")
+                                td2.setAttribute("id", "id" + W + "Title")
+                                td2.innerHTML = coursePlan[W]
+
+                                td3.innerHTML = i
+
+                                td4.innerHTML = coursePlan[key]
+                                td4.setAttribute("id", key + "Topic")
+
+                                td6.setAttribute("class", "text-center align-middle")
+
+                                if (individualStatus[key] == "pending") {
+                                    badge.setAttribute("class", "badge rounded-pill d-inline")
+                                    badge.setAttribute("style", "color: #fff; background-color: #ffc107")
+                                    badge.innerHTML = "Pending"
+                                }
+                                else if (individualStatus[key] == "confirmed") {
+                                    badge.setAttribute("class", "badge rounded-pill d-inline")
+                                    badge.setAttribute("style", "color: #fff; background-color: #28a745")
+                                    badge.innerHTML = "Confirmed"
+                                }
+                                else if (individualStatus[key] == "denied") {
+                                    badge.setAttribute("class", "badge badge-pill badge-danger")
+                                    badge.setAttribute("style", "color: #fff; background-color: #dc3545")
+                                    badge.innerHTML = "Denied"
+                                }
+                                else if(individualStatus[key] == "editing") {
+                                    badge.setAttribute("class", "badge rounded-pill d-inline")
+                                    badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                    badge.innerHTML = "Editing"
+                                }
+                                else if (individualStatus[key] == "reshoot") {
+                                    badgeIntro.setAttribute("class", "badge rounded-pill d-inline")
+                                    badgeIntro.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                    badgeIntro.innerHTML = "Reshoot"
+                                }
+                                else{
+                                    badge.setAttribute("class", "badge rounded-pill d-inline")
+                                    badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                    badge.innerHTML = "Production"
+                                }
+
+                                tr.appendChild(td1)
+                                tr.appendChild(td2)
+                                tr.appendChild(td3)
+                                tr.appendChild(td4)
+                                td6.appendChild(badge)
+                                tr.appendChild(td6)
+                            }
+                            else {
+                                td1.innerHTML = i
+
+                                td2.innerHTML = coursePlan[key]
+                                td2.setAttribute("id", key + "Topic")
+
+                                td4.setAttribute("class", "text-center align-middle")
+
+                                if (individualStatus[key] == "pending") {
+                                    badge.setAttribute("class", "badge rounded-pill d-inline")
+                                    badge.setAttribute("style", "color: #fff; background-color: #ffc107")
+                                    badge.innerHTML = "Pending"
+                                }
+                                else if (individualStatus[key] == "confirmed") {
+                                    badge.setAttribute("class", "badge rounded-pill d-inline")
+                                    badge.setAttribute("style", "color: #fff; background-color: #28a745")
+                                    badge.innerHTML = "Confirmed"
+                                }
+                                else if (individualStatus[key] == "denied") {
+                                    badge.setAttribute("class", "badge badge-pill badge-danger")
+                                    badge.setAttribute("style", "color: #fff; background-color: #dc3545")
+                                    badge.innerHTML = "Denied"
+                                }
+                                else {
+                                    badge.setAttribute("class", "badge rounded-pill d-inline")
+                                    badge.setAttribute("style", "color: #fff; background-color: #17a2b8")
+                                    badge.innerHTML = "Production"
+                                }
+
+                                tr.appendChild(td1)
+                                tr.appendChild(td2)
+                                td4.appendChild(badge)
+                                tr.appendChild(td4)
+                            }
+                            tableBody.appendChild(tr)
+                        }
+                        n++;
+                        let changeRowSpanWeekNo = document.getElementById("id" + W)
+                        let changeRowSpanWeekTitle = document.getElementById("id" + W + "Title")
+                        if (changeRowSpanWeekNo != null) {
+                            changeRowSpanWeekNo.setAttribute("rowspan", t)
+                            changeRowSpanWeekTitle.setAttribute("rowspan", t)
+                        }
+                        else {
+                            break
+                        }
+                    }
+
+                }
+                else {
+                    let addMessage = document.getElementById("addMessage")
+                    addMessage.classList.remove("hide")
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

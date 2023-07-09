@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/stylePostProductionCourseView.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--<script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };  
+    </script>-->
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <button style="display: none;" id="nonPurpose" value="{{justLoggedIn}}"></button>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40"
+                    style="margin-right:5px" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/post-production-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-course-plan">
+                    <i class="fa-solid fa-file" style="--i:2"></i>
+                    <span style="--g:2">course plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-production-form">
+                    <i class="fa fa-folder" style="--i:3"></i>
+                    <span style="--g:3">form</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-production-history">
+                    <i class="fa-solid fa-square-check" style="--i:4"></i>
+                    <span style="--g:4">history</span>
+                </a>
+            </li>
+            <li>
+                <a href="/post-production-course-view">
+                    <i class="fa-solid fa-book" style="--i:5"></i>
+                    <span style="--g:5">Course View</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa fa-globe" style="--i:6"></i>
+                    <span style="--g:6">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <section id="tableSection1" class="table-responsive-lg p-4" style="overflow-x:auto;">
+        <div class="text-center my-3">
+            <h4 style="color: #004bff;">Denied Courses</h4>
+        </div>
+        <table class="table table-sm table-bordered table-hover auto-index table-striped " cell-padding="10">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 50px;" class="text-center">Sno</th>
+                    <th scope="col" style="width: 100px;" class="text-center">Course Name</th>
+                    <th scope="col" style="width: 150px;" class="text-center">Prof Name</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Degree</th>
+                    <th scope="col" style="width: 30px;" class="text-center">Credit</th>
+                    <th scope="col" style="width: 70px;" class="text-center">Target time</th>
+                    <th scope="col" style="width: 120px;" class="text-center">Editor Name</th>
+                    <th scope="col" style="width: 150px;" class="text-center">Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each deniedCourses}}
+                <tr style="height: 15px;">
+                    <td class="text-center"></td>
+                    <td class="text-center">{{this.courseName}}</td>
+                    <td class="text-center">{{this.facultyName}}</td>
+                    <td class="text-center">{{this.degree}}</td>
+                    <td class="text-center">{{this.credits}}</td>
+                    <td class="text-center">{{this.durationTarget}}</td>
+                    <td class="text-center">{{this.editorName}}</td>
+                    <td class="text-center" id="editButton">
+                        <button type="button" class="btn btn-sm btn-secondary btn-rounded" value="{{this._id}}"
+                            onclick="openDeniedCourseView(this.value)">Open</button>
+                        <button type="button" class="btn btn-sm btn-info btn-rounded"
+                            onclick="clearDeniedCourseView()">Clear</button>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </section>
+
+    <section id="deniedTableSection" class="table-responsive-lg p-3 hide">
+        <table class="table  table-sm table-bordered  table-striped" id="">
+            <thead>
+                <th class="text-center align-middle" style="width: 100px;">Topic</th>
+                <th class="text-center align-middle" style="width: 150px;">Properties</th>
+                <th class="text-center align-middle" style="width: 200px;">Details</th>
+                <th class="text-center align-middle" style="width: 50px;">operations</th>
+            </thead>
+            <tbody id="deniedTableBody">
+
+            </tbody>
+        </table>
+    </section>
+
+    <section class="menuDiv">
+        <form class="row g-3 ">
+            <div class="col-md-4">
+                <select class="form-select" name="courseInfo" id="idCourseInfo" required="required"
+                    onchange="fetchRecordedDates(this.value)">
+                    <option value="" selected>Choose Course..</option>
+                    {{#each courses}}
+                    <option value="{{this.value}}">{{this.display}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="recordedDate" id="idRecordedDate" required="required">
+                    <option value="" selected>Choose Recorded Date...</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary mb-3" id="fetchCoursePlan"
+                    onclick="generateCourseView()">Generate</button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-info mb-3" id="clearCoursePlan"
+                    onclick="clearCourseView()">Clear</button>
+            </div>
+
+        </form>
+    </section>
+    <section id="tableSection" class="table-responsive-lg p-3 hide">
+        <table class="table   table-sm table-bordered  table-striped" id="">
+            <thead>
+                <th scope="row" class="text-center align-middle" style="width: 100px;">Date</th>
+                <th scope="row" class="text-center align-middle" style="width: 150px;">Properties</th>
+                <th scope="row" class="text-center align-middle" style="width: 200px;">Details</th>
+                <th scope="row" class="text-center align-middle" style="width: 50px;">Operations</th>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>
+    </section>
+
+    <section class="text-center hide" id="addMessage">
+        <span style="font-size: 20px;">No Data Available...</span>
+    </section>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+        function generateCourseView() {
+            let element = document.getElementById("idCourseInfo")
+            let data = element.value
+            if (data === "") {
+                element.setCustomValidity("Please Select an item in the list");
+                element.reportValidity();
+            }
+            else {
+                fetch("/post-production-course-view", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ key: data, flag: "1" }),
+                }).then(res => res.json()).then(data => {
+                    let courseView = data.data
+                    let recordedDates = courseView.recordedDates.sort((function (a, b) {
+                        return a - b
+                    }))
+                    if (recordedDates) {
+                        let table = document.getElementById("tableSection")
+                        let tableBody = document.getElementById("tableBody")
+                        tableBody.innerHTML = ""
+                        table.classList.remove("hide")
+
+                        let n = 0
+                        let reqDate = document.getElementById("idRecordedDate").value
+                        if (reqDate == "") {
+                            while (n < parseInt(recordedDates.length)) {
+                                for (var i = 0; i < 2; i++) {
+                                    let currData = courseView[recordedDates[n]]
+                                    let tr = document.createElement("tr")
+                                    let th = document.createElement("th")
+                                    let th1 = document.createElement("th")
+                                    let td = document.createElement("td")
+                                    let str = ""
+                                    if (i == 0) {
+                                        let tdOperations = document.createElement("td")
+                                        let btn = document.createElement("button")
+                                        th.setAttribute("rowspan", "3")
+                                        th.setAttribute("class", "text-center align-middle")
+                                        th.innerHTML = recordedDates[n]
+
+                                        th1.setAttribute("scope", "row")
+                                        th1.setAttribute("class", "align-middle")
+                                        th1.innerHTML = "Paths"
+
+                                        for (var x = 0; x < currData["paths"].length; x++) {
+                                            str = str + currData["paths"][x] + "<br>"
+                                        }
+                                        td.innerHTML = str
+
+                                        tdOperations.setAttribute("rowspan", "3")
+                                        tdOperations.setAttribute("class", "text-center align-middle")
+                                        btn.setAttribute("type", "button")
+                                        btn.setAttribute("class", "btn btn-sm btn-info btn-rounded")
+                                        //btn.setAttribute("id", keys[n])
+                                        btn.setAttribute("value", recordedDates[n])
+                                        btn.setAttribute("onclick", "reshoot(this.value)")
+                                        btn.innerHTML = "Reshoot"
+
+
+                                        tr.appendChild(th)
+                                        tr.appendChild(th1)
+                                        tr.appendChild(td)
+                                        tdOperations.appendChild(btn)
+                                        tr.appendChild(tdOperations)
+
+                                        tableBody.appendChild(tr)
+                                    }
+                                    else {
+                                        th.setAttribute("scope", "row")
+                                        th.innerHTML = "Duration"
+
+                                        td.innerHTML = currData["minutesRecorded"] + "Mins " + currData["secondsRecorded"] + "sec "
+
+                                        let tr1 = document.createElement("tr")
+                                        let td1 = document.createElement("td")
+
+                                        th1.setAttribute("scope", "row")
+                                        th1.innerHTML = "Remarks"
+
+                                        td1.innerHTML = currData["preRemarks"]
+
+                                        let tr2 = document.createElement("tr")
+                                        let td2 = document.createElement("td")
+
+                                        tr2.setAttribute("class", "table-primary")
+                                        td2.setAttribute("colspan", "4")
+
+                                        tr.appendChild(th)
+                                        tr.appendChild(td)
+
+                                        tr1.appendChild(th1)
+                                        tr1.appendChild(td1)
+
+                                        tr2.appendChild(td2)
+
+                                        tableBody.appendChild(tr)
+                                        tableBody.appendChild(tr1)
+                                        tableBody.appendChild(tr2)
+                                    }
+                                }
+                                n++;
+                            }
+                        }
+                        else {
+                            for (var i = 0; i < 2; i++) {
+                                let currData = courseView[reqDate]
+                                let tr = document.createElement("tr")
+                                let th = document.createElement("th")
+                                let th1 = document.createElement("th")
+                                let td = document.createElement("td")
+                                let tdOperations = document.createElement("td")
+                                let btn = document.createElement("button")
+                                let str = ""
+                                if (i == 0) {
+                                    th.setAttribute("rowspan", "3")
+                                    th.setAttribute("class", "text-center align-middle")
+                                    th.innerHTML = reqDate
+
+                                    th1.setAttribute("scope", "row")
+                                    th1.setAttribute("class", "align-middle")
+                                    th1.innerHTML = "Paths"
+
+                                    for (var x = 0; x < currData["paths"].length; x++) {
+                                        str = str + currData["paths"][x] + "<br>"
+                                    }
+                                    td.innerHTML = str
+
+                                    tdOperations.setAttribute("rowspan", "3")
+                                    tdOperations.setAttribute("class", "text-center align-middle")
+                                    btn.setAttribute("type", "button")
+                                    btn.setAttribute("class", "btn btn-sm btn-info btn-rounded")
+                                    //btn.setAttribute("id", keys[n])
+                                    btn.setAttribute("value", recordedDates[n])
+                                    btn.setAttribute("onclick", "reshoot(this.value)")
+                                    btn.innerHTML = "Reshoot"
+
+                                    tr.appendChild(th)
+                                    tr.appendChild(th1)
+                                    tr.appendChild(td)
+                                    tdOperations.appendChild(btn)
+                                    tr.appendChild(tdOperations)
+
+                                    tableBody.appendChild(tr)
+                                }
+                                else {
+                                    th.setAttribute("scope", "row")
+                                    th.innerHTML = "Duration"
+
+                                    td.innerHTML = currData["minutesRecorded"] + "Mins " + currData["secondsRecorded"] + "sec "
+
+                                    let tr1 = document.createElement("tr")
+                                    let td1 = document.createElement("td")
+
+                                    th1.setAttribute("scope", "row")
+                                    th1.innerHTML = "Remarks"
+
+                                    td1.innerHTML = currData["preRemarks"]
+
+                                    let tr2 = document.createElement("tr")
+                                    let td2 = document.createElement("td")
+
+                                    tr2.setAttribute("class", "table-primary")
+                                    td2.setAttribute("colspan", "3")
+
+                                    tr.appendChild(th)
+                                    tr.appendChild(td)
+
+                                    tr1.appendChild(th1)
+                                    tr1.appendChild(td1)
+
+                                    tr2.appendChild(td2)
+
+                                    tableBody.appendChild(tr)
+                                    tableBody.appendChild(tr1)
+                                    tableBody.appendChild(tr2)
+
+
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        let addMessage = document.getElementById("addMessage")
+                        addMessage.classList.remove("hide")
+                    }
+
+                });
+            }
+        }
+
+        function fetchRecordedDates(data) {
+            if (data === "") { }
+            else {
+                fetch("/post-production-course-view", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ key: data, flag: "2" }),
+                }).then(res => res.json()).then(data => {
+                    let n = data.recordedDates.sort(function (a, b) {
+                        return a - b
+                    })
+                    var select = document.getElementById("idRecordedDate");
+                    for (var i = 0; i < n.length; i++) {
+                        var option = document.createElement("option")
+                        option.text = n[i]
+                        option.value = n[i]
+                        select.appendChild(option)
+                    }
+                });
+            }
+        }
+
+        function clearCourseView() {
+            let display = document.getElementById("tableSection")
+            let displaybody = document.getElementById("tableBody")
+            displaybody.innerHTML = ""
+            display.classList.add("hide")
+        }
+
+        function openDeniedCourseView(id) {
+            let display = document.getElementById("deniedTableSection")
+            let displaybody = document.getElementById("deniedTableBody")
+            displaybody.innerHTML = ""
+            display.classList.remove("hide")
+            fetch("/post-production-course-view", {
+                headers: { 'Content-Type': "application/json" },
+                method: "POST",
+                body: JSON.stringify({ key: id, flag: "2" }),
+            }).then(res => res.json()).then(data => {
+                let statusDenied = data.statusDenied
+                let dates = data.preTopicsCompleted
+                let keys = Object.keys(statusDenied).sort()
+                let n = 0
+                while (n < keys.length) {
+                    for (var i = 0; i < 2; i++) {
+                        let currData = statusDenied[keys[n]]
+                        let tr = document.createElement("tr")
+                        let th = document.createElement("th")
+                        let th1 = document.createElement("th")
+                        let td = document.createElement("td")
+                        let str = ""
+                        if (i == 0) {
+                            let td4 = document.createElement("td")
+
+                            th.setAttribute("rowspan", "4")
+                            th.setAttribute("class", "text-center align-middle")
+                            th.innerHTML = keys[n]
+
+                            th1.setAttribute("scope", "row")
+                            th1.setAttribute("class", "align-middle")
+                            th1.innerHTML = "Feedback"
+
+                            td.innerHTML = currData["feedback"]
+
+                            td4.setAttribute("rowspan", "4")
+                            td4.setAttribute("class", "text-center align-middle")
+
+                            let btn = document.createElement("button")
+                            btn.setAttribute("type", "button")
+                            btn.setAttribute("class", "btn btn-sm btn-info btn-rounded")
+                            btn.setAttribute("id", keys[n])
+                            btn.setAttribute("value", id)
+                            btn.setAttribute("onclick", "resolveDeniedCourse(this.id)")
+                            btn.innerHTML = "Resolve"
+
+                            tr.appendChild(th)
+                            tr.appendChild(th1)
+                            tr.appendChild(td)
+                            td4.appendChild(btn)
+                            tr.appendChild(td4)
+
+                            displaybody.appendChild(tr)
+                        }
+                        else {
+                            th.setAttribute("scope", "row")
+                            th.innerHTML = "Cuts"
+
+                            td.innerHTML = currData["cuts"]
+
+                            let tr1 = document.createElement("tr")
+                            let td1 = document.createElement("td")
+
+                            th1.setAttribute("scope", "row")
+                            th1.innerHTML = "Edits"
+
+                            td1.innerHTML = currData["edits"]
+
+                            let tr3 = document.createElement("tr")
+                            let td3 = document.createElement("td")
+                            let th3 = document.createElement("th")
+
+                            th3.setAttribute("scope", "row")
+                            th3.innerHTML = "Recorded Date"
+
+                            td3.innerHTML = dates[keys[n]]
+
+                            let tr2 = document.createElement("tr")
+                            let td2 = document.createElement("td")
+
+                            tr2.setAttribute("class", "table-danger")
+                            td2.setAttribute("colspan", "4")
+
+                            tr.appendChild(th)
+                            tr.appendChild(td)
+
+                            tr1.appendChild(th1)
+                            tr1.appendChild(td1)
+
+                            tr3.appendChild(th3)
+                            tr3.appendChild(td3)
+
+                            tr2.appendChild(td2)
+
+                            displaybody.appendChild(tr)
+                            displaybody.appendChild(tr1)
+                            displaybody.appendChild(tr3)
+                            displaybody.appendChild(tr2)
+                        }
+                    }
+                    n++;
+                }
+            });
+        }
+
+        function clearDeniedCourseView() {
+            let display = document.getElementById("deniedTableSection")
+            let displaybody = document.getElementById("deniedTableBody")
+            displaybody.innerHTML = ""
+            display.classList.add("hide")
+        }
+
+        async function resolveDeniedCourse(key) {
+            await Swal.fire({
+                title: 'Topic Details',
+                html:
+                    '<input id="swal-input1" type="url" class="form-control" placeholder="Enter the URL" style="font-size:18px">' +
+                    '<input id="swal-input2" type ="text" class="form-control mt-3" placeholder="Enter the Path" style="font-size:18px">' +
+                    '<input id="swal-input3" type="number" class="form-control my-3" placeholder="Min" style="font-size:18px">' +
+                    '<input id="swal-input4" type="number" class="form-control" placeholder="Sec" style="font-size:18px">',
+                focusConfirm: false,
+                showCancelButton: true,
+                cancelButtonColor: '#d33',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input1').value,
+                        document.getElementById('swal-input2').value,
+                        document.getElementById('swal-input3').value,
+                        document.getElementById('swal-input4').value
+                    ]
+                }
+            }).then((formResponse) => {
+                if (formResponse.isConfirmed) {
+                    let formDetails = {}
+                    formDetails["videoLink"] = formResponse.value[0]
+                    formDetails["postPath"] = formResponse.value[1]
+                    formDetails["duration"] = formResponse.value[2] + ":" + formResponse.value[3]
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want to resolve!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Resolve'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let id = document.getElementById(key).value
+                            fetch("/post-production-course-view", {
+                                headers: { 'Content-Type': "application/json" },
+                                method: "POST",
+                                body: JSON.stringify({ id: id, flag: "3", key: key, details: formDetails }),
+                            }).then(res => res.json()).then(data => {
+                                Swal.fire(
+                                    key,
+                                    'Video send for Reconfirmation.',
+                                    'success'
+                                ).then((e) => {
+                                    location.reload()
+                                })
+                            });
+
+                        }
+                    })
+                }
+            })
+        }
+
+        async function reshoot(date) {
+            let id = document.getElementById("idCourseInfo").value
+            const fire = await Swal.fire({
+                input: 'textarea',
+                inputLabel: 'Message',
+                inputPlaceholder: 'Type your Remarks here...',
+                inputAttributes: {
+                    'aria-label': 'Type your Remarks here'
+                },
+                showCancelButton: true,
+                allowOutsideClick: false
+            }).then((response) => {
+                if (response.isConfirmed) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want to send for Reshoot?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, Reshoot',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch("/post-production-reshoot", {
+                                headers: { 'Content-Type': "application/json" },
+                                method: "POST",
+                                body: JSON.stringify({ for: "initialFetch", id: id, date: date, remarks: response.value }),
+                            }).then(res => res.json()).then(status => {
+                                if (status.status) {
+                                    Swal.fire(
+                                        date,
+                                        'Video send for Reshoot.',
+                                        'success'
+                                    ).then((e) => {
+                                        $('#fetchCoursePlan').click()
+                                    })
+                                }
+                                else {
+                                    if (status.deniedStatus) {
+                                        Swal.fire({
+                                            title: 'Are you sure?',
+                                            text: "This topic has been Denied by the faculty and Post Production Form Exist. Do you want to send for Reshoot?",
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#3085d6',
+                                            cancelButtonColor: '#d33',
+                                            confirmButtonText: 'Yes, Reshoot',
+                                            allowOutsideClick: false
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                fetch("/post-production-reshoot", {
+                                                    headers: { 'Content-Type': "application/json" },
+                                                    method: "POST",
+                                                    body: JSON.stringify({ id: id, date: date, remarks: response.value }),
+                                                }).then(res => res.json()).then(status => {
+                                                    if (status.status == "error") {
+                                                        Swal.fire({
+                                                            title: 'Something went wrong',
+                                                            icon: 'error',
+                                                            showConfirmButton: true
+                                                        })
+                                                    }
+                                                    else {
+                                                        Swal.fire(
+                                                            date,
+                                                            'Video send for Reshoot.',
+                                                            'success'
+                                                        ).then((e) => {
+                                                            $('#fetchCoursePlan').click()
+                                                        })
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    }
+                                    else {
+                                        Swal.fire(
+                                            date,
+                                            'This topic is in Confirmed/Pending state!. So cannot be sent for Reshoot.',
+                                            'error'
+                                        )
+                                    }
+                                }
+                            });
+                        }
+                    })
+                }
+            })
+        }
+
+    </script>
+</body>
+
+</html>

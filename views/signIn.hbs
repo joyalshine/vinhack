@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/stylesheets/styleSignIn.css" />
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <div class="waveWrapper waveAnimation">
+        <div class="waveWrapperInner bgTop">
+            <div class="wave waveTop"
+                style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgMiddle">
+            <div class="wave waveMiddle"
+                style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
+        </div>
+        <div class="waveWrapperInner bgBottom">
+            <div class="wave waveBottom"
+                style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+                integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+                crossorigin="anonymous" referrerpolicy="no-referrer" />
+        </div>
+    </div>
+    <div class="container" id="container">
+        <div class="form-container sign-up-container" id="sign-up-container">
+            <form action="" onsubmit="return credentialValidator1(event)">
+                <h1>Create Account</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input type="text" name="name" id="registrationName" placeholder="Name" autocomplete="off" required />
+                <input type="email" name="email" id="registrationEmail" placeholder="Email" autocomplete="off"  required />
+                <input type="tel" name="phone" id="registrationPhone" placeholder="Phone" autocomplete="off"  required />
+                <button id="nextButton">next</button>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form action="/signIn" onsubmit="return signIn(event)">
+                <h1>Sign in</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your account</span>
+                <input type="email" id="username" placeholder="Email" autocomplete="off"  />
+                <input type="password" id="userpassword" placeholder="Password" autocomplete="off"  />
+                <a href="#">Forgot your password?</a>
+                <button>Sign In</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script>
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const container = document.getElementById('container');
+
+        signUpButton.addEventListener('click', () => {
+            container.classList.add("right-panel-active");
+        });
+
+        signInButton.addEventListener('click', () => {
+            container.classList.remove("right-panel-active");
+        });
+
+
+
+        let details = {}
+        function credentialValidator1(e) {
+            e.preventDefault()
+            let name = document.getElementById("registrationName").value
+            let email = document.getElementById("registrationEmail").value
+            let phone = document.getElementById("registrationPhone").value
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            console.log(phone.length)
+            if (phone.length != 10) {
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Enter a valid Phone no'
+                })
+            }
+            else {
+                details.name = name
+                details.email = email
+                details.phone = phone
+                let display = document.getElementById("sign-up-container")
+                display.innerHTML = ""
+                display.innerHTML = `
+                <form action="" onsubmit="return credentialValidator2(event)">
+                    <h1 class="mb-4">Just There..</h1>
+                    <input type="date" name="dob" id="registrationDob" required />
+                    <input type="password" name="password" id="registrationPassword" placeholder="Password" required />
+                    <input type="password" name="confirmPassword" id="registrationConfirmPassword" placeholder="Confirm Password" required />
+                    <button id="nextButton">Send OTP</button>
+                </form>
+                `
+            }
+        }
+
+        $("#otp1").blur(function () {
+            $("#otp2").focus()
+        });
+
+        let inputs = ""
+
+        function handleOtp(e) {
+            const input = e.target;
+            let value = input.value;
+            let isValidInput = value.match(/[0-9a-z]/gi);
+            input.value = "";
+            input.value = isValidInput ? value[0] : "";
+
+            let fieldIndex = input.dataset.index;
+            if (fieldIndex < inputs.length - 1 && isValidInput) {
+                input.nextElementSibling.focus();
+            }
+
+            if (e.key === "Backspace" && fieldIndex > 0) {
+                input.previousElementSibling.focus();
+            }
+
+            if (fieldIndex == inputs.length - 1 && isValidInput) {
+
+            }
+        }
+
+        function handleOnPasteOtp(e) {
+            const data = e.clipboardData.getData("text");
+            const value = data.split("");
+            if (value.length === inputs.length) {
+                inputs.forEach((input, index) => (input.value = value[index]));
+                submit();
+            }
+        }
+
+        function credentialValidator2(e) {
+            e.preventDefault()
+            let dob = document.getElementById("registrationDob").value
+            let pass = document.getElementById("registrationPassword").value
+            let confirmPass = document.getElementById("registrationConfirmPassword").value
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            var diff_ms = Date.now() - new Date(dob).getTime();
+            var age_dt = new Date(diff_ms);
+            let age = Math.abs(age_dt.getUTCFullYear() - 1970);
+
+
+            if (age < 16) {
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Need to be 16+'
+                }).then((v => {
+                    location.reload()
+                }))
+            }
+            else if (pass != confirmPass) {
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Passwords did not match'
+                })
+            }
+            else {
+                let display = document.getElementById("container")
+                details.dob = dob
+                details.password = pass
+                display.innerHTML = ""
+                display.innerHTML = `
+                <form action="" onsubmit="return credentialValidator3(event)">
+                <h1>OTP Verification</h1>
+                <div style="display: flex;" class="m-5 mb-4 otp-field">
+                    <input type="text" maxlength="1" class="m-1" style="text-align: center;" id="otp1" autofocus required />
+                    <input type="text" maxlength="1" class="m-1" style="text-align: center;"   id="otp2" required />
+                    <input type="text" maxlength="1" class="m-1" style="text-align: center;"   id="otp3" required />
+                    <input type="text" maxlength="1" class="m-1" style="text-align: center;"   id="otp4" required />
+                </div>
+                <button id="nextButton">Verify</button>
+            </form>
+                `
+                inputs = document.querySelectorAll(".otp-field input");
+                inputs.forEach((input, index) => {
+                    input.dataset.index = index;
+                    input.addEventListener("keyup", handleOtp);
+                    input.addEventListener("paste", handleOnPasteOtp);
+                });
+
+                var otp = Math.floor(1000 + Math.random() * 9000);
+                details.otp = otp
+
+                fetch("/send-otp", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ email: details.email, otp: otp, name: details.name }),
+                }).then(res => res.json()).then(response => {
+                    Swal.fire(
+                        'Successfull!',
+                        'OTP sent successfully!',
+                        'success'
+                    )
+                })
+            }
+        }
+
+        function credentialValidator3(e) {
+            e.preventDefault()
+            let otp1 = document.getElementById("otp1").value
+            let otp2 = document.getElementById("otp2").value
+            let otp3 = document.getElementById("otp3").value
+            let otp4 = document.getElementById("otp4").value
+
+            let enteredValue = otp1 + otp2 + otp3 + otp4
+
+            if (parseInt(enteredValue) == details.otp) {
+                Swal.fire(
+                    'Successfull!',
+                    'OTP verified successfully!',
+                    'success'
+                ).then((v => {
+                    let form = document.createElement("form")
+                    form.setAttribute("action", "/signup")
+                    form.setAttribute("method", "post")
+
+                    let name = document.createElement("input")
+                    name.setAttribute("type", "hidden")
+                    name.setAttribute("name", "name")
+                    name.setAttribute("value", details.name)
+
+                    let email = document.createElement("input")
+                    email.setAttribute("type", "hidden")
+                    email.setAttribute("name", "email")
+                    email.setAttribute("value", details.email)
+
+                    let phone = document.createElement("input")
+                    phone.setAttribute("type", "hidden")
+                    phone.setAttribute("name", "phone")
+                    phone.setAttribute("value", details.phone)
+
+                    let pass = document.createElement("input")
+                    pass.setAttribute("type", "hidden")
+                    pass.setAttribute("name", "password")
+                    pass.setAttribute("value", details.password)
+
+                    let dob = document.createElement("input")
+                    dob.setAttribute("type", "hidden")
+                    dob.setAttribute("name", "dob")
+                    dob.setAttribute("value", details.dob)
+
+                    form.appendChild(name)
+                    form.appendChild(email)
+                    form.appendChild(phone)
+                    form.appendChild(dob)
+                    form.appendChild(pass)
+
+                    document.body.appendChild(form);
+                    form.submit()
+                }))
+            }
+            else {
+                Swal.fire(
+                    'Failed!',
+                    'OTP verification failed!',
+                    'error'
+                )
+            }
+        }
+
+        function signIn(e) {
+            e.preventDefault()
+
+            let email = document.getElementById("username").value
+            let password = document.getElementById("userpassword").value
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+
+            fetch("/sign-in", {
+                headers: { 'Content-Type': "application/json" },
+                method: "POST",
+                body: JSON.stringify({ for: "validation", email: email, password: password }),
+            }).then(res => res.json()).then(response => {
+                console.log(response.status)
+                if (response.status == "1") {
+                    Swal.fire(
+                        'Successfull!',
+                        'Logged in successfully!',
+                        'success'
+                    ).then(e => {
+                        let form = document.createElement("form")
+                        form.setAttribute("action", "/home-page")
+                        form.setAttribute("method", "post")
+
+                        let name = document.createElement("input")
+                        name.setAttribute("type", "hidden")
+                        name.setAttribute("name", "name")
+                        name.setAttribute("value", response.name)
+
+                        form.appendChild(name)
+                        document.body.appendChild(form);
+                        form.submit()
+
+                    })
+                }
+                else if (response.status == "2") {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Invalid Credintials'
+                    }).then(e => {
+                        document.getElementById("userpassword").value = ""
+                    })
+                }
+                else {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Invalid User'
+                    })
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

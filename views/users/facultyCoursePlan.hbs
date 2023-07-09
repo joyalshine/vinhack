@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/styleFacultyCoursePlan.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!--<script type="text/javascript">
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };  
+    </script>-->
+</head>
+
+<body>
+    <div class="overlay" onclick="off()"></div>
+    <button style="display: none;" id="nonPurpose" value="{{justLoggedIn}}"></button>
+    <header class="text-center" id="preProductionHomeHeader">
+        <div class="">
+            <img src="https://vit.ac.in/files/gravitas19/images/vit_white.png" id="preProductionHomeLogo" alt="">
+        </div>
+        <div class="topright">
+            <a href="" style="text-decoration: none; color:#fff">
+                <img src="https://cdn-icons-png.flaticon.com/128/3237/3237472.png" width="40" height="40"
+                    style="margin-right:5px" alt="">
+                {{user.facultyName}}
+            </a>
+        </div>
+    </header>
+    <div class="containerMain">
+        <a href="#" class="toggleBox">
+            <span class="icon"></span>
+        </a>
+        <ul class="navItems">
+            <li>
+                <a href="/faculty-home">
+                    <i class="fa fa-home" style="--i:1"></i>
+                    <span style="--g:1">home</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-course-plan">
+                    <i class="fa fa-solid fa-book" style="--i:2"></i>
+                    <span style="--g:2">Course Plan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-confirmation">
+                    <i class="fa-solid fa-check-to-slot" style="--i:3"></i>
+                    <span style="--g:3">Confirmation</span>
+                </a>
+            </li>
+            <li>
+                <a href="/faculty-slot-booking">
+                    <i class="fa-solid fa-user" style="--i:4"></i>
+                    <span style="--g:4">Slot Booking</span>
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i class="fa-solid fa-right-from-bracket" style="--i:5"></i>
+                    <span style="--g:5">logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <section class="menuDiv">
+        <form class="row g-3 ">
+            <div class="col-auto">
+                <select class="form-select" name="courseInfo" id="idCourseInfo" required="required">
+                    <option value="" selected>Choose Course..</option>
+                    {{#each courses}}
+                    <option value="{{this.value}}">{{this.display}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary mb-3" id="fetchCoursePlan"
+                    onclick="generateCoursePlan()">Generate</button>
+            </div>
+        </form>
+    </section>
+    <section id="tableSection" class="table-responsive-lg px-5 hide" style="overflow-x:auto; ">
+        <table class="table table-sm table-bordered  table-striped" style="">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 30px;" class="text-center">W#</th>
+                    <th scope="col" style="width: 50px;" class="text-center">Week Title</th>
+                    <th scope="col" style="width: 20px;" class="text-center">Sno</th>
+                    <th scope="col" style="width: 170px;" class="text-center">Topic</th>
+                    <th scope="col" style="width: 50px;" class="text-center">Materials</th>
+                    <th scope="col" style="width: 28px;" class="text-center">Operations</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+
+            </tbody>
+        </table>
+    </section>
+    <section class="text-center hide" id="addMessage">
+        <span>No Course Plan available..</span>
+        <div class="col mt-2" style="">
+            <button class="btn btn-rounded btn-primary" onclick="postForm()">
+                Add Course Plan
+            </button>
+        </div>
+    </section>
+    <input type="hidden" value="{{displayDefault}}" id="displayDefault">
+    <input type="hidden" value="{{defaultId}}" id="defaultId">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+        integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+        integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+        crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var toggleClick = document.querySelector(".toggleBox");
+        var containerMain = document.querySelector(".containerMain");
+        var overlayScreen = document.querySelector(".overlay");
+
+        toggleClick.addEventListener('click', () => {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        })
+
+        function off() {
+            toggleClick.classList.toggle('active');
+            overlayScreen.classList.toggle('active');
+            containerMain.classList.toggle('active');
+        }
+
+        window.onload = defaultDisplayCourse
+
+        function defaultDisplayCourse() {
+            let defaultDisplayFlag = document.getElementById("displayDefault").value
+            if (defaultDisplayFlag == "true") {
+                let defaultId = document.getElementById("defaultId").value
+                let courseDropDown = document.getElementById("idCourseInfo")
+                let coursePlanDisplayBtn = document.getElementById("fetchCoursePlan")
+
+                courseDropDown.value = defaultId
+                coursePlanDisplayBtn.click()
+            }
+        }
+
+        function generateCoursePlan() {
+            let element = document.getElementById("idCourseInfo")
+            let data = element.value
+            if (data === "") {
+                element.setCustomValidity("Please Select an item in the list");
+                element.reportValidity();
+            }
+            else {
+                fetch("/faculty-course-plan", {
+                    headers: { 'Content-Type': "application/json" },
+                    method: "POST",
+                    body: JSON.stringify({ key: data }),
+                }).then(res => res.json()).then(fetchedCoursePlan => {
+                    if (fetchedCoursePlan.data.coursePlan) {
+                        let coursePlan = fetchedCoursePlan.data.coursePlan
+                        let files = fetchedCoursePlan.data.files
+                        let table = document.getElementById("tableSection")
+                        table.classList.remove("hide")
+                        let n = 1
+                        let tableBody = document.getElementById("tableBody")
+                        tableBody.innerHTML = ""
+
+                        let trIntro = document.createElement("tr")
+                        let td1Intro = document.createElement("td")
+                        let td2Intro = document.createElement("td")
+                        let td3Intro = document.createElement("td")
+                        let td4Intro = document.createElement("td")
+                        let td6Intro = document.createElement("td")
+                        let td7Intro = document.createElement("td")
+                        let btnIntro = document.createElement("button")
+
+                        td4Intro.innerHTML = "Course Introduction"
+
+                        td7Intro.setAttribute("class", "text-center align-middle")
+
+                        btnIntro.setAttribute("type", "button")
+                        btnIntro.setAttribute("class", "btn btn-sm btn-rounded")
+
+                        btnIntro.setAttribute("style", "background-color:#ffebc2;")
+                        btnIntro.innerHTML = "Edit"
+
+                        trIntro.appendChild(td1Intro)
+                        trIntro.appendChild(td2Intro)
+                        trIntro.appendChild(td3Intro)
+                        trIntro.appendChild(td4Intro)
+                        trIntro.appendChild(td6Intro)
+                        trIntro.appendChild(td7Intro)
+                        tableBody.appendChild(trIntro)
+
+                        while (n <= parseInt(coursePlan.weeks)) {
+                            let W = "W" + n
+                            let names = ["file","quiz", "webLink"]
+                            let file = {}
+                            for (var i = 0; i < 3; i++) {
+                                if (files[W + "-" + names[i]] != null) {
+                                    file[names[i]] = files[W + "-" + names[i]]
+                                }
+                            }
+                            let rowspan = 1
+                            while (true) {
+                                let tempKey = W + "-" + rowspan
+                                if (coursePlan[tempKey] == null) {
+                                    rowspan--
+                                    break
+                                }
+                                else {
+                                    rowspan++
+                                }
+                            }
+                            for (var i = 1; i <= rowspan; i++) {
+                                let key = W + "-" + i
+                                let tr = document.createElement("tr")
+                                let td1 = document.createElement("td")
+                                let td2 = document.createElement("td")
+                                let td3 = document.createElement("td")
+                                let td4 = document.createElement("td")
+
+                                if (i == 1) {
+                                    let td6 = document.createElement("td")
+                                    let td7 = document.createElement("td")
+                                    let btn = document.createElement("button")
+                                    let btn1 = document.createElement("button")
+
+                                    td1.setAttribute("rowspan", rowspan)
+                                    td1.setAttribute("class", "text-center align-middle")
+                                    td1.innerHTML = W
+
+                                    td2.setAttribute("rowspan", rowspan)
+                                    td2.setAttribute("class", "text-center align-middle")
+                                    td2.setAttribute("id", W)
+                                    td2.innerHTML = coursePlan[W]
+
+                                    td3.innerHTML = i
+                                    td3.setAttribute("class","text-center")
+
+                                    td4.innerHTML = coursePlan[key]
+
+                                    td6.setAttribute("rowspan", rowspan)
+
+                                    btn1.setAttribute("type", "button")
+                                    btn1.setAttribute("class", "btn btn-sm btn-info btn-rounded")
+                                    btn1.setAttribute("value", W)
+                                    btn1.setAttribute("onclick", "fileUploadPage(this.value)")
+                                    btn1.innerHTML = "Edit"
+
+                                    if (jQuery.isEmptyObject(file)) {
+                                        td6.setAttribute("class", "text-center align-middle")
+                                    }
+                                    else {
+                                        td6.setAttribute("class", "text-center")
+                                        btn1.setAttribute("style", "margin-top:15px;")
+                                        let keysTemp = Object.keys(file)
+                                        console.log(file)
+
+                                        if (keysTemp.includes("file")) {
+                                            let a = document.createElement("a")
+                                            let br = document.createElement("br")
+                                            let hr = document.createElement("hr")
+                                            let i = document.createElement("i")
+                                            let div = document.createElement("div")
+                                            a.setAttribute("href", file["file"])
+                                            a.setAttribute("target", "_blank")
+                                            a.setAttribute("class","filesDownloadATag")
+                                            if(file["webLink"].split(".")[1] == "rar"){
+                                                a.setAttribute("download",W + "-Lecture Notes.rar")
+                                            }
+                                            else{
+                                                a.setAttribute("download",W + "-Lecture Notes")
+                                            }
+                                            a.innerHTML = ""
+                                            a.setAttribute("style", "text-decoration: none;")
+                                            i.setAttribute("class","fa-solid fa-download filesIcon")
+                                            div.setAttribute("class","fileDisplayDiv")
+                                            a.appendChild(div)
+                                            div.innerText = "Lecture Notes"
+                                            div.appendChild(i)
+                                            td6.appendChild(a)
+                                        }
+                                        if (keysTemp.includes("webLink")) {
+                                            let a = document.createElement("a")
+                                            let i = document.createElement("i")
+                                            let div = document.createElement("div")
+                                            a.setAttribute("href", file["webLink"])
+                                            a.setAttribute("target", "_blank")
+                                            a.setAttribute("class","filesDownloadATag")
+                                            if(file["webLink"].split(".")[1] == "rar"){
+                                                a.setAttribute("download",W + "-WebLink.rar")
+                                            }
+                                            else{
+                                                a.setAttribute("download",W + "-WebLink")
+                                            }
+                                            a.innerHTML = ""
+                                            a.setAttribute("style", "text-decoration: none;")
+                                            i.setAttribute("class","fa-solid fa-download filesIcon")
+                                            div.setAttribute("class","fileDisplayDiv")
+                                            a.appendChild(div)
+                                            div.innerText = "Web Link"
+                                            div.appendChild(i)
+                                            td6.appendChild(a)
+                                        }
+                                        if (keysTemp.includes("quiz")) {
+                                            let a = document.createElement("a")
+                                            let i = document.createElement("i")
+                                            let div = document.createElement("div")
+                                            a.setAttribute("href", file["quiz"])
+                                            a.setAttribute("target", "_blank")
+                                            a.setAttribute("download", W + "-Quiz")
+                                            a.setAttribute("class","filesDownloadATag")
+                                            a.setAttribute("style", "text-decoration: none;")
+                                            i.setAttribute("class","fa-solid fa-download filesIcon")
+                                            div.setAttribute("class","fileDisplayDiv")
+                                            a.appendChild(div)
+                                            div.innerText = "Quiz"
+                                            div.appendChild(i)
+                                            td6.appendChild(a)
+                                        }
+                                    }
+                                    td7.setAttribute("rowspan", rowspan)
+                                    td7.setAttribute("class", "text-center align-middle")
+
+                                    btn.setAttribute("type", "button")
+                                    btn.setAttribute("class", "btn btn-sm btn-rounded")
+                                    btn.setAttribute("onclick", "editPlan(" + n + ")")
+                                    btn.setAttribute("style", "background-color:#ffebc2;")
+                                    btn.innerHTML = "Edit"
+
+                                    tr.appendChild(td1)
+                                    tr.appendChild(td2)
+                                    tr.appendChild(td3)
+                                    tr.appendChild(td4)
+                                    td6.appendChild(btn1)
+                                    tr.appendChild(td6)
+                                    td7.appendChild(btn)
+                                    tr.appendChild(td7)
+                                }
+                                else {
+                                    td1.innerHTML = i
+                                    td1.setAttribute("class","text-center")
+                                    td2.innerHTML = coursePlan[key]
+
+                                    tr.appendChild(td1)
+                                    tr.appendChild(td2)
+                                }
+                                tableBody.appendChild(tr)
+                            }
+                            n++;
+
+                            let divisionRow = document.createElement("tr")
+                            divisionRow.setAttribute("class", "table-primary")
+                            let divisionData = document.createElement("td")
+                            divisionData.setAttribute("colspan", "6")
+                            divisionRow.appendChild(divisionData)
+                            tableBody.appendChild(divisionRow)
+                        }
+                    }
+                    else {
+                        let addMessage = document.getElementById("addMessage")
+                        addMessage.classList.remove("hide")
+                    }
+
+                });
+            }
+        }
+
+        function fileUploadPage(week) {
+            form1 = document.createElement("form")
+            form1.setAttribute('method', "POST");
+            form1.setAttribute('action', "/faculty-course-plan-file-upload");
+
+            let id = document.getElementById("idCourseInfo").value
+            let weekTopic = document.getElementById(week).innerHTML
+
+            let hiddenElement1 = document.createElement("input")
+            hiddenElement1.setAttribute("type", "hidden")
+            hiddenElement1.setAttribute("name", "id")
+            hiddenElement1.setAttribute("value", id)
+
+            let hiddenElement2 = document.createElement("input")
+            hiddenElement2.setAttribute("type", "hidden")
+            hiddenElement2.setAttribute("name", "week")
+            hiddenElement2.setAttribute("value", week)
+
+            let hiddenElement3 = document.createElement("input")
+            hiddenElement3.setAttribute("type", "hidden")
+            hiddenElement3.setAttribute("name", "weekTopic")
+            hiddenElement3.setAttribute("value", weekTopic)
+
+            form1.appendChild(hiddenElement1)
+            form1.appendChild(hiddenElement2)
+            form1.appendChild(hiddenElement3)
+
+            document.body.appendChild(form1)
+            form1.submit()
+        }
+
+
+        function postForm(key) {
+            let data = document.getElementById("idCourseInfo").value
+
+            var form = document.createElement('form');
+            form.setAttribute('method', "POST");
+            form.setAttribute('action', "/faculty-course-plan-new-add");
+
+            var hiddenField = document.createElement('input');
+            hiddenField.setAttribute('type', 'hidden');
+            hiddenField.setAttribute('name', "id");
+            hiddenField.setAttribute('value', data);
+
+            var hiddenField1 = document.createElement('input');
+            hiddenField1.setAttribute('type', 'hidden');
+            hiddenField1.setAttribute('name', "key");
+            hiddenField1.setAttribute('value', false);
+
+            form.appendChild(hiddenField);
+            form.appendChild(hiddenField1);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function editPlan(data) {
+            let id = document.getElementById("idCourseInfo").value
+
+            var form = document.createElement('form');
+            form.setAttribute('method', "POST");
+            form.setAttribute('action', "/faculty-course-plan-update");
+
+            var hiddenField = document.createElement('input');
+            hiddenField.setAttribute('type', 'hidden');
+            hiddenField.setAttribute('name', "id");
+            hiddenField.setAttribute('value', id);
+
+            var hiddenField1 = document.createElement('input');
+            hiddenField1.setAttribute('type', 'hidden');
+            hiddenField1.setAttribute('name', "week");
+            hiddenField1.setAttribute('value', data);
+
+            var hiddenField2 = document.createElement('input');
+            hiddenField2.setAttribute('type', 'hidden');
+            hiddenField2.setAttribute('name', "key");
+            hiddenField2.setAttribute('value', false);
+
+            form.appendChild(hiddenField);
+            form.appendChild(hiddenField1);
+            form.appendChild(hiddenField2);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+    </script>
+</body>
+
+</html>
